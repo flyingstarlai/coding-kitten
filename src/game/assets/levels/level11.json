@@ -1,0 +1,32 @@
+{
+  "current": "QrSt_UvWxYz01AbCdEfG",
+  "facing": "right",
+  "start": [
+    { "col": 2, "row": 1 }
+  ],
+  "collectible": [
+    { "col": 4, "row": 0 },
+    { "col": 5, "row": 2 }
+  ],
+  "obstacle": [],
+  "goal": [
+    { "col": 4, "row": 4 }
+  ],
+  "path": [
+    { "col": 3, "row": 1 },
+    { "col": 4, "row": 1 },
+    { "col": 5, "row": 1 },
+    { "col": 6, "row": 1 },
+    { "col": 2, "row": 2 },
+    { "col": 3, "row": 2 },
+    { "col": 6, "row": 2 },
+    { "col": 2, "row": 3 },
+    { "col": 3, "row": 3 },
+    { "col": 4, "row": 3 },
+    { "col": 5, "row": 3 },
+    { "col": 6, "row": 3 }
+  ],
+  "maxStep": 8,
+  "commands": ["left", "right", "up", "down"],
+  "next":  "IjKl_MnOpQrStUvWxYz0"
+}

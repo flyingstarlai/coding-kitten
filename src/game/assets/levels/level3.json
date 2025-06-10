@@ -1,0 +1,18 @@
+{
+  "current": "Gh9-jK0LmNoPqRsTuVwX",
+  "facing": "up",
+  "start": [
+    { "col": 4, "row": 3 }
+  ],
+  "collectible": [],
+  "obstacle": [],
+  "goal": [
+    { "col": 4, "row": 1 }
+  ],
+  "path": [
+    { "col": 4, "row": 2 }
+  ],
+  "maxStep": 2,
+  "commands": ["up"],
+  "next": "Yz12_AbCdEfGhIjKlMnO"
+}

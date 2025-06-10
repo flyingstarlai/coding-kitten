@@ -1,0 +1,26 @@
+{
+  "current": "MnOp_QrStUvWxYz01AbC",
+  "facing": "right",
+  "start": [
+    { "col": 2, "row": 2 }
+  ],
+  "collectible": [
+    { "col": 4, "row": 3 }
+  ],
+  "obstacle": [],
+  "goal": [
+    { "col": 6, "row": 2 }
+  ],
+  "path": [
+    { "col": 3, "row": 1 },
+    { "col": 4, "row": 1 },
+    { "col": 5, "row": 1 },
+    { "col": 3, "row": 2 },
+    { "col": 5, "row": 2 },
+    { "col": 3, "row": 3 },
+    { "col": 5, "row": 3 }
+  ],
+  "maxStep": 6,
+  "commands": ["left", "right", "up", "down"],
+  "next":  "DeFg_HiJkLmNoPqRsTuV"
+}
