@@ -1312,7 +1312,6 @@
     ]
   },
   "meta": {
-    "version": "0.6.7",
     "image": "cat_sheet.png",
     "format": "RGBA8888",
     "size": {

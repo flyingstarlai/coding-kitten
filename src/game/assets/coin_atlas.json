@@ -156,8 +156,6 @@
     ]
   },
   "meta": {
-    "app": "http://free-tex-packer.com",
-    "version": "0.6.7",
     "image": "coin_sheet.png",
     "format": "RGBA8888",
     "size": {

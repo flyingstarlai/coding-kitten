@@ -1,8 +1,6 @@
-// src/game/utils/asset-utils.ts
-
 import { Assets, Spritesheet, Texture } from "pixi.js";
 
-// IMPORTANT: always import JSON/PNG/MP3 as a URL string, not a parsed object
+// Import URLs via Vite
 import catAtlasJsonUrl from "@/game/assets/cat_atlas.json?url";
 import catSheetPngUrl from "@/game/assets/cat_sheet.png?url";
 import coinAtlasJsonUrl from "@/game/assets/coin_atlas.json?url";
@@ -11,8 +9,6 @@ import mapArenaJsonUrl from "@/game/assets/map_arena.json?url";
 import mapArenaPngUrl from "@/game/assets/map_arena.png?url";
 import levelsJsonUrl from "@/game/assets/levels.json?url";
 import chestClosedPngUrl from "@/game/assets/chest_closed.png?url";
-
-// AUDIO
 import collectCoinMp3Url from "@/game/assets/sounds/collect_coin.mp3?url";
 import onGoalMp3Url from "@/game/assets/sounds/on_goal.mp3?url";
 import failedMp3Url from "@/game/assets/sounds/failed.mp3?url";
@@ -48,9 +44,10 @@ export const spriteBundles = {
 export type BundleName = keyof typeof spriteBundles;
 
 /**
- * For each bundle, any key containing "atlas" (case-insensitive) maps to Spritesheet,
- * keys in the "audio" bundle map to string (URL),
- * everything else is a PIXI.Texture.
+ * Maps each bundle entry key to the appropriate type:
+ * - keys containing 'atlas' → Spritesheet
+ * - audio bundle → string URL
+ * - else → PIXI.Texture
  */
 export type BundleTextures<B extends BundleName> = {
   readonly [K in keyof (typeof spriteBundles)[B]]: Lowercase<
@@ -65,8 +62,8 @@ export type BundleTextures<B extends BundleName> = {
 let hasRegistered = false;
 
 /**
- * Register all sprite and JSON URLs with Pixi Assets,
- * prefixing cache keys by bundleName-entryKey to avoid collisions.
+ * Register all bundles with Pixi's global Assets system.
+ * Uses `bundleName-entryKey` as the cache key to avoid collisions.
  */
 export function registerSpriteBundles(): void {
   if (hasRegistered) return;
@@ -83,41 +80,60 @@ export function registerSpriteBundles(): void {
         toRegister[entryKey] = url;
       }
     }
-    if (Object.keys(toRegister).length > 0) {
+    if (Object.keys(toRegister).length) {
       Assets.addBundle(bundleName, toRegister);
     }
   }
 }
 
 /**
- * Load one bundle from Pixi's Assets system.
- * Automatically parses any Tiled‐style JSON atlas into a Spritesheet.
+ * Load a generic bundle: returns raw entries (Textures, strings, or parsed JSON).
+ * Does NOT parse atlas JSON into Spritesheet.
  */
 export async function loadBundle<B extends BundleName>(
   name: B,
 ): Promise<BundleTextures<B>> {
-  // Load all entries in the bundle: URLs → Texture for images, raw objects for JSON
-  const entries = (await Assets.loadBundle(name)) as Record<string, any>;
+  const entries = await Assets.loadBundle(name);
+  return entries as BundleTextures<B>;
+}
 
-  // Detect any JSON atlas (it will be an object with `frames` and `meta`)
-  for (const key of Object.keys(entries)) {
-    const val = entries[key];
-    if (val && typeof val === "object" && val.frames && val.meta) {
-      // Find the matching image Texture in this bundle
-      const sheetKey = Object.keys(entries).find(
-        (k) => k !== key && entries[k] instanceof Texture,
-      );
-      if (sheetKey) {
-        const sheetTex = entries[sheetKey] as Texture;
-        // Create and parse the Spritesheet
-        const sheet = new Spritesheet(sheetTex, val);
-        await sheet.parse();
-        // Replace the JSON entry with the parsed Spritesheet
-        entries[key] = sheet;
-      }
-      break;
-    }
+/**
+ * Load *and* parse a Tiled‐style atlas bundle into a Spritesheet.
+ * It finds the JSON entry (has `frames` + `meta`) and its matching Texture,
+ * then runs `Spritesheet.parse()` before returning.
+ */
+export async function loadBundleAtlas<B extends BundleName>(
+  name: B,
+): Promise<Spritesheet> {
+  // Load raw entries
+  const entries = (await Assets.loadBundle(name)) as Record<
+    string,
+    Spritesheet | Texture
+  >;
+
+  // Find the atlas JSON object
+  const atlasKey = Object.keys(entries).find((k) => /atlas$/i.test(k));
+  if (!atlasKey) {
+    throw new Error(`No atlas JSON found in bundle "${name}"`);
   }
 
-  return entries as unknown as BundleTextures<B>;
+  console.log("AtlasKey", atlasKey);
+  const atlasJson = entries[atlasKey] as Spritesheet;
+
+  console.log("AtlasJson", atlasJson);
+
+  // Find a Texture entry to use as the sheet image
+  const sheetKey = Object.keys(entries).find(
+    (k) => k !== atlasKey && entries[k] instanceof Texture,
+  );
+  if (!sheetKey) {
+    throw new Error(`No sheet Texture found in "${name}" bundle`);
+  }
+  const sheetTexture = entries[sheetKey] as Texture;
+
+  // Construct and parse the Spritesheet
+  const sheet = new Spritesheet(sheetTexture, atlasJson.data);
+  await sheet.parse();
+
+  return sheet;
 }

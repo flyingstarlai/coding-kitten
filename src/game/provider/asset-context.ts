@@ -1,18 +1,16 @@
 import { createContext, useContext } from "react";
 import type { BundleTextures } from "@/game/utils/asset-utils.ts";
-
-export type CatTex = BundleTextures<"cat">;
-export type CoinTex = BundleTextures<"coin">;
-export type ChestTex = BundleTextures<"chest">;
-export type MapsTex = BundleTextures<"maps">;
-export type AudioTex = BundleTextures<"audio">;
+import type { Spritesheet } from "pixi.js";
 
 export interface AssetContextType {
-  cat: CatTex;
-  coin: CoinTex;
-  chest: ChestTex;
-  maps: MapsTex;
-  audio: AudioTex;
+  // parsed atlas → Spritesheet
+  cat: Spritesheet;
+  coin: Spritesheet;
+  // generic bundles: JSON objects and Textures
+  maps: BundleTextures<"maps">;
+  chest: BundleTextures<"chest">;
+  // audio URLs
+  audio: BundleTextures<"audio">;
 }
 
 export const AssetContext = createContext<AssetContextType | null>(null);

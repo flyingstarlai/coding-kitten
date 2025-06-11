@@ -37,7 +37,7 @@ export const AnimatedSpriteRenderSystem: React.FC = () => {
 
     // b) Update texture & animationSpeed if needed
     if (animFacet) {
-      const textures = cat.catAtlas.animations[animFacet.name];
+      const textures = cat.animations[animFacet.name];
       if (sprite.textures !== textures) {
         sprite.textures = textures;
       }
@@ -95,8 +95,8 @@ export const AnimatedSpriteRenderSystem: React.FC = () => {
     .getComponent(eid, "spriteAnimation");
 
   const initialTextures = initialAnim
-    ? cat.catAtlas.animations[initialAnim.name]
-    : cat.catAtlas.animations["idle"];
+    ? cat.animations[initialAnim.name]
+    : cat.animations["idle"];
 
   return (
     <pixiAnimatedSprite

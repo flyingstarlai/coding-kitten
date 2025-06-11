@@ -14,8 +14,8 @@ export const CoinSprite: React.FC<{ eid: number }> = ({ eid }) => {
   const animFacet = ecs.getComponent(eid, "spriteAnimation");
   const initialTextures = useMemo(() => {
     if (!animFacet) return [];
-    return coin.coinAtlas.animations[animFacet.name];
-  }, [animFacet, coin.coinAtlas.animations]);
+    return coin.animations[animFacet.name];
+  }, [animFacet, coin.animations]);
 
   useEffect(() => {
     const spr = spriteRef.current;

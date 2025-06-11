@@ -3,7 +3,11 @@ import {
   AssetContext,
   type AssetContextType,
 } from "@/game/provider/asset-context.ts";
-import { loadBundle, registerSpriteBundles } from "@/game/utils/asset-utils.ts";
+import {
+  loadBundle,
+  loadBundleAtlas,
+  registerSpriteBundles,
+} from "@/game/utils/asset-utils.ts";
 
 export const AssetProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [assets, setAssets] = useState<AssetContextType | null>(null);
@@ -11,19 +15,20 @@ export const AssetProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
   useEffect(() => {
     registerSpriteBundles();
+
     Promise.all([
-      loadBundle("cat"),
-      loadBundle("coin"),
-      loadBundle("chest"),
-      loadBundle("maps"),
-      loadBundle("audio"),
+      loadBundleAtlas("cat"), // Spritesheet
+      loadBundleAtlas("coin"), // Spritesheet
+      loadBundle("maps"), // JSON + Texture bundle
+      loadBundle("chest"), // Texture bundle
+      loadBundle("audio"), // string URLs
     ])
-      .then(([cat, coin, chest, maps, audio]) => {
-        setAssets({ cat, coin, chest, maps, audio });
+      .then(([cat, coin, maps, chest, audio]) => {
+        setAssets({ cat, coin, maps, chest, audio });
       })
       .catch((err) => {
         console.error("Failed to load assets", err);
-        setError(err);
+        setError(err instanceof Error ? err : new Error(String(err)));
       });
   }, []);
 
