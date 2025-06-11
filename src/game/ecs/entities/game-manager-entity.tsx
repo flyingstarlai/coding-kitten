@@ -9,13 +9,9 @@ import { ManagerTag } from "@/game/ecs/components/manager-tag.tsx";
 export const GameManagerEntity: React.FC = () => {
   const eid = useCreateEntity();
 
-  console.log("GameManagerEntity", eid);
-
   if (eid == null) {
     return null;
   }
-
-  console.log("create game manager", eid);
 
   return (
     <EntityProvider eid={eid}>

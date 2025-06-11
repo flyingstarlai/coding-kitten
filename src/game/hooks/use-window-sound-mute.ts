@@ -6,12 +6,10 @@ export function useWindowSoundMute() {
   useEffect(() => {
     const onBlur = () => {
       // Mute every playing sound
-      console.log("pause all");
       sound.pauseAll();
     };
     const onFocus = () => {
       // Unmute all sounds so they can play again
-      console.log("resume all");
       sound.resumeAll();
     };
 

@@ -20,7 +20,6 @@ export const LevelsRenderSystem: React.FC = () => {
   }, [sheetTex, rawMap.tilesets]);
 
   const levelData = levelMapper.find((lvl) => lvl.id === level);
-  console.log("levelData", levelData);
 
   const layer = rawMap.layers.find(
     (L) => L.type === "tilelayer" && L.name === levelData?.layer,

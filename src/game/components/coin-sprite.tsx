@@ -21,9 +21,9 @@ export const CoinSprite: React.FC<{ eid: number }> = ({ eid }) => {
     const spr = spriteRef.current;
     if (spr && initialTextures.length > 0) {
       // ensure nearest filtering
-      for (const t of initialTextures) {
-        t.source.scaleMode = "nearest";
-      }
+      // for (const t of initialTextures) {
+      //   t.source.scaleMode = "nearest";
+      // }
       spr.textures = initialTextures;
       spr.loop = true;
       spr.play();

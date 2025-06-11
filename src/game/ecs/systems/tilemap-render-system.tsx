@@ -10,7 +10,6 @@ export const TilemapRenderSystem: React.FC = () => {
   const { maps } = useAssets();
   const rawMap = maps.bgArenaJson as unknown as TiledMap;
 
-  console.log("raw map", rawMap);
   const sheetTex = maps.mapAreaPng;
 
   const frames = React.useMemo(() => {

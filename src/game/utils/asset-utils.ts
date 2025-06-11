@@ -3,8 +3,10 @@ import { Assets, Spritesheet, Texture } from "pixi.js";
 // Import URLs via Vite
 import catAtlasJsonUrl from "@/game/assets/cat_atlas.json?url";
 import catSheetPngUrl from "@/game/assets/cat_sheet.png?url";
+
 import coinAtlasJsonUrl from "@/game/assets/coin_atlas.json?url";
 import coinSheetPngUrl from "@/game/assets/coin_sheet.png?url";
+
 import mapArenaJsonUrl from "@/game/assets/map_arena.json?url";
 import mapArenaPngUrl from "@/game/assets/map_arena.png?url";
 import levelsJsonUrl from "@/game/assets/levels.json?url";
@@ -16,14 +18,6 @@ import bgMusicMp3Url from "@/game/assets/sounds/bg_sound.mp3?url";
 import runningMp3Url from "@/game/assets/sounds/running_in_grass.mp3?url";
 
 export const spriteBundles = {
-  cat: {
-    catAtlas: catAtlasJsonUrl,
-    catSheet: catSheetPngUrl,
-  },
-  coin: {
-    coinAtlas: coinAtlasJsonUrl,
-    coinSheet: coinSheetPngUrl,
-  },
   maps: {
     bgArenaJson: mapArenaJsonUrl,
     mapAreaPng: mapArenaPngUrl,
@@ -41,8 +35,20 @@ export const spriteBundles = {
   },
 } as const;
 
+export const atlasBundles = {
+  coin: {
+    coinAtlas: coinAtlasJsonUrl,
+    coinSheet: coinSheetPngUrl,
+  },
+  cat: {
+    catAtlas: catAtlasJsonUrl,
+    catSheet: catSheetPngUrl,
+  },
+};
+
 export type BundleName = keyof typeof spriteBundles;
 
+export type AtlasBundleName = keyof typeof atlasBundles;
 /**
  * Maps each bundle entry key to the appropriate type:
  * - keys containing 'atlas' → Spritesheet
@@ -50,13 +56,18 @@ export type BundleName = keyof typeof spriteBundles;
  * - else → PIXI.Texture
  */
 export type BundleTextures<B extends BundleName> = {
-  readonly [K in keyof (typeof spriteBundles)[B]]: Lowercase<
+  readonly [K in keyof (typeof spriteBundles)[B]]: B extends "audio"
+    ? string
+    : Texture;
+};
+
+// Atlas bundles become Spritesheet + Texture
+export type AtlasBundleTextures<B extends AtlasBundleName> = {
+  readonly [K in keyof (typeof atlasBundles)[B]]: Lowercase<
     Extract<K, string>
   > extends `${string}atlas${string}`
     ? Spritesheet
-    : B extends "audio"
-      ? string
-      : Texture;
+    : Texture;
 };
 
 let hasRegistered = false;
@@ -102,38 +113,40 @@ export async function loadBundle<B extends BundleName>(
  * It finds the JSON entry (has `frames` + `meta`) and its matching Texture,
  * then runs `Spritesheet.parse()` before returning.
  */
-export async function loadBundleAtlas<B extends BundleName>(
+export async function loadBundleAtlas<B extends AtlasBundleName>(
   name: B,
 ): Promise<Spritesheet> {
-  // Load raw entries
-  const entries = (await Assets.loadBundle(name)) as Record<
-    string,
-    Spritesheet | Texture
-  >;
+  // Build our two unique aliases:
+  const atlasAlias = `${name}Atlas`;
 
-  // Find the atlas JSON object
-  const atlasKey = Object.keys(entries).find((k) => /atlas$/i.test(k));
+  // 2) Grab the URL for the JSON from your spriteBundles definition
+  const urlMap = atlasBundles[name] as Record<string, string>;
+
+  const atlasKey = (Object.keys(urlMap) as Array<keyof typeof urlMap>).find(
+    (k) => /atlas$/i.test(k as string),
+  );
   if (!atlasKey) {
-    throw new Error(`No atlas JSON found in bundle "${name}"`);
+    throw new Error(`No atlas URL defined for bundle "${name}"`);
   }
 
-  console.log("AtlasKey", atlasKey);
-  const atlasJson = entries[atlasKey] as Spritesheet;
-
-  console.log("AtlasJson", atlasJson);
-
-  // Find a Texture entry to use as the sheet image
-  const sheetKey = Object.keys(entries).find(
-    (k) => k !== atlasKey && entries[k] instanceof Texture,
+  const sheetKey = (Object.keys(urlMap) as Array<keyof typeof urlMap>).find(
+    (k) => k !== atlasKey,
   );
   if (!sheetKey) {
-    throw new Error(`No sheet Texture found in "${name}" bundle`);
+    throw new Error(`No sheet entry defined for bundle "${name}"`);
   }
-  const sheetTexture = entries[sheetKey] as Texture;
+  const sheetUrl = urlMap[sheetKey];
+  const atlasUrl = urlMap[atlasKey];
 
-  // Construct and parse the Spritesheet
-  const sheet = new Spritesheet(sheetTexture, atlasJson.data);
-  await sheet.parse();
+  const sheetTexture = await Assets.load(sheetUrl);
 
-  return sheet;
+  console.log("ATLAS", atlasAlias, atlasUrl, sheetTexture);
+
+  Assets.add({
+    alias: atlasAlias,
+    src: atlasUrl,
+    data: { texture: sheetTexture },
+  });
+
+  return (await Assets.load(atlasAlias)) as Spritesheet;
 }

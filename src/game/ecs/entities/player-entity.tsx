@@ -33,7 +33,6 @@ export const PlayerEntity: React.FC<PlayerProps> = () => {
     return { col: sc, row: sr, pixelX: px, pixelY: py };
   }, [level.start]);
 
-  console.log("spawning player at grid", col, row, "→ pixels", pixelX, pixelY);
   // 3) If there’s no start tile at all, render nothing
   if (eid === null || level.start.length === 0) {
     return null;
