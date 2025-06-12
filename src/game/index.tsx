@@ -27,6 +27,7 @@ import { useSearch } from "@tanstack/react-router";
 import { useEcsStore } from "@/game/store/use-ecs-store.ts";
 import { MovementSoundSystem } from "@/game/ecs/systems/movement-sound-system.tsx";
 import { useWindowSoundMute } from "@/game/hooks/use-window-sound-mute.ts";
+import { ScoreRenderSystem } from "@/game/ecs/systems/score-render-system.tsx";
 
 export const GameContainer: React.FC = () => {
   return (
@@ -89,6 +90,7 @@ const Game: React.FC = () => {
           <TilemapRenderSystem />
 
           <BoardContainer>
+            <ScoreRenderSystem />
             <BoardRenderSystem />
             <LevelsRenderSystem />
 

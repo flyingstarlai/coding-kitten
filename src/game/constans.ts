@@ -6,7 +6,7 @@ export const GameConstants = {
   GRID_COLS: 9,
   GRID_ROWS: 5,
   TILE_SIZE: 100,
-  DEBUG_MODE: true,
+  DEBUG_MODE: false,
   DURATION: 1,
 };
 

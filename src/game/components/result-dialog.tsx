@@ -70,7 +70,10 @@ export const ResultDialog: React.FC = () => {
 
   return (
     <Dialog open={open} onOpenChange={(val) => !val && closeDialog()}>
-      <DialogContent className="max-w-sm mx-auto dark:bg-zinc-500">
+      <DialogContent
+        className="max-w-sm mx-auto dark:bg-zinc-500"
+        style={{ fontFamily: "'Fredoka One', system-ui, sans-serif" }}
+      >
         <DialogHeader className="flex flex-col items-center space-y-2">
           <DialogTitle className="text-center text-2xl font-semibold">
             {progressFacet?.onGoal ? "Level Completed" : "Level Failed"}
