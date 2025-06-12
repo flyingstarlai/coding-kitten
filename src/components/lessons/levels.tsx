@@ -44,7 +44,7 @@ export const Levels: React.FC = () => {
                 search={{ level: level.id }}
               >
                 <Button variant="outline" className="w-full">
-                  Start Level
+                  Play Level
                 </Button>
               </Link>
             </CardFooter>

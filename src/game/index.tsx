@@ -58,12 +58,10 @@ const Game: React.FC = () => {
 
   useEffect(() => {
     resetEntityId();
-    console.log("PlayRoute: level changed → resetting ECS store");
   }, [level, resetEntityId]);
 
   // triggering the ResizeObserver inside ResponsiveSystem.
   useEffect(() => {}, [sidebar.state]);
-  console.log("Rerender");
   useWindowSoundMute();
 
   return (

@@ -43,8 +43,6 @@ export const DragHint: React.FC<DragHintProps> = ({
     const sourceEl = p.querySelector("[data-palette-item]");
     const targetEl = w.querySelector("[data-workspace-item]");
 
-    console.log("src/tar", sourceEl, targetEl);
-
     if (sourceEl && targetEl) {
       const src = sourceEl.getBoundingClientRect();
       const tgt = targetEl.getBoundingClientRect();

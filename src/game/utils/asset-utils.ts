@@ -146,8 +146,6 @@ export async function loadBundleAtlas<B extends AtlasBundleName>(
 
   const sheetTexture = await Assets.load(sheetUrl);
 
-  console.log("ATLAS", atlasAlias, atlasUrl, sheetTexture);
-
   Assets.add({
     alias: atlasAlias,
     src: atlasUrl,
