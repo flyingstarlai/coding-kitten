@@ -25,8 +25,8 @@ export const ScoreRenderSystem: React.FC = () => {
   return (
     <pixiContainer
       label="score"
-      x={GameConstants.TILE_SIZE * GameConstants.GRID_COLS - 100}
-      y={-40}
+      x={GameConstants.TILE_SIZE * GameConstants.GRID_COLS}
+      y={0}
     >
       <pixiSprite texture={coinTex} scale={0.8} />
       <pixiText text={scoreText} style={textStyle} x={48} y={3} />

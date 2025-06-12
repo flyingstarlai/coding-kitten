@@ -44,7 +44,6 @@ export function flattenWorkspaceItems(
     // Top‐level items have no parent loop: parentId = null
     helper(item, null);
   }
-  console.log(`result: ${JSON.stringify(result)}`);
 
   return result;
 }

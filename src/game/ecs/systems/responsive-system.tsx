@@ -40,8 +40,10 @@ export const ResponsiveSystem: React.FC<ResponsiveSystemProps> = ({
       const vw = GameConstants.GAME_WIDTH;
       const vh = GameConstants.GAME_HEIGHT;
 
-      const rawScale = Math.min(ww / vw, wh / vh);
-      const scale = Math.max(1, rawScale);
+      const rawScale = Math.max(ww / vw, wh / vh);
+      const scale = Math.min(Math.max(rawScale, 1), 1.5);
+
+      console.log(scale);
 
       //  apply scale & center
       pixi.app.stage.scale.set(scale, scale);
