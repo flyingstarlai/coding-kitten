@@ -9,10 +9,9 @@ import { useEcsStore } from "@/game/store/use-ecs-store.ts";
 
 export const PalettePanel = forwardRef<HTMLDivElement>((_, ref) => {
   const { setDraggingItem, setPointer, isOverDeleteZone } = useDragDropStore();
-  const availableCommands = useEcsStore((s) => s.level).commands;
-
+  const available = useEcsStore((s) => s.level).commands;
   const paletteItems = COMMAND_ITEMS.filter((item) =>
-    availableCommands.includes(item.command),
+    available.includes(item.command),
   );
 
   return (
@@ -20,13 +19,14 @@ export const PalettePanel = forwardRef<HTMLDivElement>((_, ref) => {
       ref={ref}
       data-dropzone="palette"
       className={clsx(
-        "p-4 border rounded flex flex-wrap gap-2 transition-colors duration-200",
+        "p-2 border rounded flex flex-wrap gap-2 transition-colors duration-200 dark:bg-zinc-800",
         isOverDeleteZone && "bg-red-200/20 border-red-200/20",
       )}
     >
       {paletteItems.map((item) => (
         <div
           key={item.id}
+          data-palette-item={true}
           onPointerDown={(e) =>
             onPalettePointerDown(e, item, setDraggingItem, setPointer)
           }

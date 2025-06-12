@@ -16,6 +16,9 @@ import onGoalMp3Url from "@/game/assets/sounds/on_goal.mp3?url";
 import failedMp3Url from "@/game/assets/sounds/failed.mp3?url";
 import bgMusicMp3Url from "@/game/assets/sounds/bg_sound.mp3?url";
 import runningMp3Url from "@/game/assets/sounds/running_in_grass.mp3?url";
+import tickMp3Url from "@/game/assets/sounds/tick.mp3?url";
+import rejectedMp3Url from "@/game/assets/sounds/rejected.mp3?url";
+import destroyMp3Url from "@/game/assets/sounds/destroy.mp3?url";
 
 export const spriteBundles = {
   maps: {
@@ -32,6 +35,9 @@ export const spriteBundles = {
     onFailed: failedMp3Url,
     bgMusic: bgMusicMp3Url,
     onMoving: runningMp3Url,
+    onDrop: tickMp3Url,
+    onRejected: rejectedMp3Url,
+    onDestroy: destroyMp3Url,
   },
 } as const;
 

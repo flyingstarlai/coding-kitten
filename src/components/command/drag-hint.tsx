@@ -1,0 +1,93 @@
+import React, { useLayoutEffect, useState } from "react";
+import { motion } from "motion/react";
+import type {
+  IBaseCommand,
+  IWorkspaceItem,
+} from "@/components/command/types.ts";
+import { BaseCommand } from "@/components/command/base-command.tsx";
+import { useEcsStore } from "@/game/store/use-ecs-store.ts";
+
+interface DragHintProps {
+  paletteRef: React.RefObject<HTMLDivElement | null>;
+  workspaceRef: React.RefObject<HTMLDivElement | null>;
+}
+
+export const DragHint: React.FC<DragHintProps> = ({
+  paletteRef,
+  workspaceRef,
+}) => {
+  const [coords, setCoords] = useState<{
+    from: { x: number; y: number };
+    to: { x: number; y: number };
+  } | null>(null);
+
+  const level = useEcsStore((s) => s.level);
+
+  const [cmd] = level.commands;
+
+  const hintItem: IWorkspaceItem = {
+    id: "hint-1",
+    command: cmd,
+    parent: null,
+    variant: "direction",
+    count: 0,
+    children: [],
+  };
+
+  useLayoutEffect(() => {
+    const p = paletteRef.current;
+    const w = workspaceRef.current;
+
+    if (!p || !w) return;
+
+    const sourceEl = p.querySelector("[data-palette-item]");
+    const targetEl = w.querySelector("[data-workspace-item]");
+
+    console.log("src/tar", sourceEl, targetEl);
+
+    if (sourceEl && targetEl) {
+      const src = sourceEl.getBoundingClientRect();
+      const tgt = targetEl.getBoundingClientRect();
+      setCoords({
+        from: { x: src.left + src.width / 2, y: src.top + src.height / 2 },
+        to: { x: tgt.left + tgt.width / 2, y: tgt.top + tgt.height / 2 },
+      });
+    }
+  }, [paletteRef, workspaceRef, level]);
+
+  if (!coords) return null;
+  const dx = coords.to.x - coords.from.x;
+  const dy = coords.to.y - coords.from.y;
+
+  if (level.guides.length === 0) return;
+
+  return (
+    <motion.div
+      style={{
+        position: "fixed",
+        left: coords.from.x - 28,
+        top: coords.from.y - 28,
+        width: 56,
+        height: 56,
+        pointerEvents: "none",
+        zIndex: 9999,
+      }}
+      animate={{
+        x: [0, dx, dx],
+        y: [0, dy, dy],
+        opacity: [0, 1, 1, 0],
+      }}
+      transition={{
+        duration: 1.2,
+        easing: "ease-in-out",
+        times: [0, 0.1, 0.9, 1],
+        repeat: Infinity,
+        repeatDelay: 0.8,
+      }}
+    >
+      <div className="w-full h-full opacity-80">
+        <BaseCommand type="palette" item={hintItem as IBaseCommand} />
+      </div>
+    </motion.div>
+  );
+};

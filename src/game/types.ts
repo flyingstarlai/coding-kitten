@@ -17,6 +17,7 @@ export interface GameLevel {
   path: Array<{ col: number; row: number }>;
   maxStep: number;
   commands: ("up" | "down" | "left" | "right" | "scratch" | "loop")[];
+  guides: ("up" | "down" | "left" | "right" | "scratch")[];
 }
 
 // ─── TILE KINDS ───────────────────────────────────────────────────────────────

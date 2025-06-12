@@ -8,6 +8,7 @@ import React, {
 import type {
   IWorkspaceItem,
   ILoopCommand,
+  Variant,
 } from "@/components/command/types.ts";
 import { useDragDropStore } from "@/store/use-drag-drop-store.ts";
 import { LoopCommand } from "@/components/command/loop-command.tsx";
@@ -19,6 +20,7 @@ import { CommandControls } from "@/components/command/command-controls.tsx";
 import { queueWorkspaceSequence } from "@/game/utils/command-utils.ts";
 import { useEntityQuery } from "@/game/hooks/use-entity-query.ts";
 import { useEcsStore } from "@/game/store/use-ecs-store.ts";
+import { resetPlayerToStart } from "@/game/utils/reset-player-utils.ts";
 
 export const WorkspacePanel = forwardRef<HTMLDivElement>((_, ref) => {
   const {
@@ -30,13 +32,15 @@ export const WorkspacePanel = forwardRef<HTMLDivElement>((_, ref) => {
     insertionIndex,
   } = useDragDropStore();
 
+  const guides = useEcsStore((s) => s.level.guides) ?? [];
+
   const [playerEid] = useEntityQuery(["playerTag"]);
   const currentCommand = useEcsStore((s) => s.currentCommand);
   const [managerEid] = useEntityQuery(["managerTag"]);
   const progressFacet = useEcsStore((s) =>
     s.getComponent(managerEid!, "progress"),
   );
-  const setCurrentCommand = useEcsStore((s) => s.setCurrentCommand);
+  const level = useEcsStore((s) => s.level);
 
   // State to track whether a sequence is in progress
   const [isRunning, setIsRunning] = useState(false);
@@ -64,9 +68,16 @@ export const WorkspacePanel = forwardRef<HTMLDivElement>((_, ref) => {
   // Called when the user clicks “Stop”
   const onStop = useCallback(() => {
     stopRef.current = true;
-    setCurrentCommand(null);
+    resetPlayerToStart(playerEid, managerEid, level);
     setIsRunning(false);
-  }, [setCurrentCommand]);
+  }, [level, managerEid, playerEid]);
+
+  const guideItems: IWorkspaceItem[] = guides.map((cmd, idx) => ({
+    command: cmd,
+    id: `hint_${idx + 1}`, // hint_1, hint_2, …
+    parent: null,
+    variant: "direction" as Variant, // or whatever variant you use for those icons
+  }));
 
   // Renders each item with a highlight if it is currently running
   const renderItem = (item: IWorkspaceItem, idx: number): ReactNode => {
@@ -127,14 +138,37 @@ export const WorkspacePanel = forwardRef<HTMLDivElement>((_, ref) => {
     );
   };
 
+  const renderGuideItem = (): ReactNode => {
+    return (
+      <div className="absolute inset-0 flex flex-items justify-start items-center px-2 gap-2 pointer-events-none">
+        {guideItems.map((item) => (
+          <div key={item.id} data-workspace-item={true}>
+            {item.command === "loop" ? (
+              <LoopCommand
+                item={item as ILoopCommand}
+                type="workspace"
+                runningCommand={currentCommand}
+              />
+            ) : (
+              <div className={clsx("transition-all duration-200 opacity-35")}>
+                <BaseCommand item={item} type="workspace" />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
   return (
-    <div className="py-2 px-4 flex items-center justify-between border rounded">
+    <div className="relative p-2 flex items-center justify-between border rounded dark:bg-zinc-800">
       <div
         ref={ref}
         data-dropzone="workspace"
         className="flex w-full flex-wrap gap-2 min-h-[108px]"
       >
         {visibleItems.map((item, idx) => renderItem(item, idx))}
+
+        {renderGuideItem()}
 
         {insertionIndex === visibleItems.length && draggingItem && (
           <div className="flex items-center gap-1">

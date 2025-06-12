@@ -66,6 +66,10 @@ export const MovementSystem: React.FC = () => {
         if (progressFacet?.isOver) {
           playSound("onFailed", 0.5);
 
+          ecs.addComponent(managerEid, "score", {
+            stars: 0,
+          });
+
           ecs.addComponent(eid, "spriteAnimation", {
             name: "whacked",
             fps: 20,

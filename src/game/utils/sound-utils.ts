@@ -10,6 +10,7 @@ export function playSound(
   speed: number = 1,
 ) {
   if (document.hasFocus()) {
+    console.log("playing audio", key);
     return sound.play(key as string, { start: 0, volume, speed });
   }
 }

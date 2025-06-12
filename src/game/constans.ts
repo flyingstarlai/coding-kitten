@@ -6,7 +6,7 @@ export const GameConstants = {
   GRID_COLS: 9,
   GRID_ROWS: 5,
   TILE_SIZE: 100,
-  DEBUG_MODE: false,
+  DEBUG_MODE: true,
   DURATION: 1,
 };
 
@@ -21,6 +21,7 @@ export const defaultLevel: GameLevel = {
   maxStep: 0,
   next: null,
   commands: [],
+  guides: [],
 };
 
 export const levelMapper = [

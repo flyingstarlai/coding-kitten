@@ -26,7 +26,8 @@
     { "col": 5, "row": 3 },
     { "col": 6, "row": 3 }
   ],
-  "maxStep": 8,
+  "maxStep": 9,
   "commands": ["left", "right", "up", "down"],
+  "guides": [],
   "next":  "IjKl_MnOpQrStUvWxYz0"
 }

@@ -12,8 +12,8 @@ import {
   Dialog,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import starFilled from "@/game/assets/star.png";
-import starEmpty from "@/game/assets/star_empty.png";
+import starFull from "@/assets/star_full.png";
+import starEmpty from "@/assets/star_empty.png";
 import { useNavigate } from "@tanstack/react-router";
 import { useDragDropStore } from "@/store/use-drag-drop-store.ts";
 
@@ -70,7 +70,7 @@ export const ResultDialog: React.FC = () => {
 
   return (
     <Dialog open={open} onOpenChange={(val) => !val && closeDialog()}>
-      <DialogContent className="max-w-sm mx-auto">
+      <DialogContent className="max-w-sm mx-auto dark:bg-zinc-500">
         <DialogHeader className="flex flex-col items-center space-y-2">
           <DialogTitle className="text-center text-2xl font-semibold">
             {progressFacet?.onGoal ? "Level Completed" : "Level Failed"}
@@ -79,9 +79,9 @@ export const ResultDialog: React.FC = () => {
             {[0, 1, 2].map((i) => (
               <img
                 key={i}
-                src={i < earnedStars ? starFilled : starEmpty}
+                src={i < earnedStars ? starFull : starEmpty}
                 alt={i < earnedStars ? "star" : "empty star"}
-                className="w-8 h-8"
+                className="w-12 h-12"
               />
             ))}
           </div>

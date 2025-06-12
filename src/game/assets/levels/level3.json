@@ -14,5 +14,6 @@
   ],
   "maxStep": 2,
   "commands": ["up"],
+  "guides": ["up", "up"],
   "next": "Yz12_AbCdEfGhIjKlMnO"
 }

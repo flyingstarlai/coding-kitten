@@ -22,5 +22,6 @@
   ],
   "maxStep": 6,
   "commands": ["left", "right", "up", "down"],
+  "guides": [],
   "next":  "DeFg_HiJkLmNoPqRsTuV"
 }

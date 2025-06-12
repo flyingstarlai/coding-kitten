@@ -12,6 +12,9 @@ import type {
   IWorkspaceItem,
 } from "@/components/command/types.ts";
 import { useSearch } from "@tanstack/react-router";
+import { useEcsStore } from "@/game/store/use-ecs-store.ts";
+import { playSound } from "@/game/utils/sound-utils.ts";
+import { DragHint } from "@/components/command/drag-hint.tsx";
 
 export const Command: React.FC = () => {
   const panelRef = useRef<HTMLDivElement>(null);
@@ -93,6 +96,8 @@ export const Command: React.FC = () => {
     setLoopInsertionIndex,
     setIsOverDeleteZone,
   ]);
+
+  const guides = useEcsStore((s) => s.level.guides);
 
   useEffect(() => {
     if (!draggingItem) {
@@ -256,6 +261,18 @@ export const Command: React.FC = () => {
 
       // If dropped into workspace (not a loop)
       if (isInWorkspace && insertionIndex !== null) {
+        // 1) If we have a guide array and the drop slot is within it,
+        //    only allow if the dragged command matches the guide at that index.
+        if (
+          guides.length > 0 &&
+          (insertionIndex >= guides.length || // beyond guide range
+            workspaceItems.length >= guides.length || // already filled all guides
+            draggingItem.command !== guides[insertionIndex]) // wrong command for this slot
+        ) {
+          resetDragState();
+          playSound("onRejected", 0.1);
+          return;
+        }
         // Remove from loop if it came from one
         if (isFromLoop && loopInfo) {
           updatedItems = removeChildFromLoop(
@@ -273,6 +290,8 @@ export const Command: React.FC = () => {
         // Insert at the calculated insertionIndex
         updatedItems.splice(insertionIndex, 0, draggingItem);
         setWorkspaceItems(updatedItems);
+        playSound("onDrop");
+
         resetDragState();
         return;
       }
@@ -282,6 +301,7 @@ export const Command: React.FC = () => {
         // If from workspace, just remove it
         if (isFromWorkspace) {
           updatedItems = updatedItems.filter((i) => i.id !== draggingItem.id);
+          playSound("onDestroy", 0.5);
         }
         // If from a loop, remove it from that loop's children
         else if (isFromLoop && loopInfo) {
@@ -327,6 +347,7 @@ export const Command: React.FC = () => {
     clearHoverStates,
     resetDragState,
     removeChildFromLoop,
+    guides,
   ]);
 
   useEffect(() => {
@@ -337,6 +358,9 @@ export const Command: React.FC = () => {
     <div className="relative flex flex-col gap-y-2 touch-none h-[230px]">
       <WorkspacePanel ref={panelRef} />
       <PalettePanel ref={paletteRef} />
+      {workspaceItems.length === 0 && !draggingItem && (
+        <DragHint paletteRef={paletteRef} workspaceRef={panelRef} />
+      )}
       <DragPreview />
     </div>
   );
