@@ -1,9 +1,9 @@
 import React, { useRef } from "react";
 import { useTick } from "@pixi/react";
 import { type IMediaInstance } from "@pixi/sound";
-import { useEntityQuery } from "@/game/hooks/use-entity-query";
-import { useEcsStore } from "@/game/store/use-ecs-store";
-import { useMovementStore } from "@/game/store/use-movement-store";
+import { useEntityQuery } from "@/game/hooks/use-entity-query.ts";
+import { useEcsStore } from "@/game/store/use-ecs-store.ts";
+import { useMovementStore } from "@/game/store/use-movement-store.ts";
 import { playSound } from "@/game/utils/sound-utils.ts";
 
 export const MovementSoundSystem: React.FC = () => {

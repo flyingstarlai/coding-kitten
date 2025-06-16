@@ -76,7 +76,12 @@ export const ResultDialog: React.FC = () => {
       >
         <DialogHeader className="flex flex-col items-center space-y-2">
           <DialogTitle className="text-center text-2xl font-semibold">
-            {progressFacet?.onGoal ? "Level Completed" : "Level Failed"}
+            {progressFacet?.isOver &&
+              progressFacet?.onGoal &&
+              "Level Completed"}
+            {progressFacet?.isOver &&
+              !progressFacet?.onGoal &&
+              "Ups.. You failed"}
           </DialogTitle>
           <div className="flex justify-center gap-2 mt-4">
             {[0, 1, 2].map((i) => (

@@ -1,7 +1,7 @@
 import { useTick } from "@pixi/react";
-import { useEntityQuery } from "@/game/hooks/use-entity-query";
-import { useEcsStore } from "@/game/store/use-ecs-store";
-import { playSound } from "@/game/utils/sound-utils";
+import { useEntityQuery } from "@/game/hooks/use-entity-query.ts";
+import { useEcsStore } from "@/game/store/use-ecs-store.ts";
+import { playSound } from "@/game/utils/sound-utils.ts";
 
 export const CollectCoinSystem: React.FC = () => {
   const [pid] = useEntityQuery(["playerTag", "gridPosition"]);

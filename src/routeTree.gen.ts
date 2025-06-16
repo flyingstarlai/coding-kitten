@@ -8,6 +8,8 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
@@ -17,8 +19,13 @@ import { Route as SiteIndexImport } from './routes/_site/index'
 import { Route as AuthRegisterImport } from './routes/_auth/register'
 import { Route as AuthLoginImport } from './routes/_auth/login'
 import { Route as SiteLessonsIndexImport } from './routes/_site/lessons/index'
-import { Route as SiteLessonsLessonIndexImport } from './routes/_site/lessons/$lesson/index'
-import { Route as SiteLessonsLessonPlayImport } from './routes/_site/lessons/$lesson/play'
+import { Route as SiteLessonsGameImport } from './routes/_site/lessons/_game'
+import { Route as SiteLessonsGameLessonIndexImport } from './routes/_site/lessons/_game/$lesson/index'
+import { Route as SiteLessonsGameLessonPlayImport } from './routes/_site/lessons/_game/$lesson/play'
+
+// Create Virtual Routes
+
+const SiteLessonsImport = createFileRoute('/_site/lessons')()
 
 // Create/Update Routes
 
@@ -30,6 +37,12 @@ const SiteRoute = SiteImport.update({
 const AuthRoute = AuthImport.update({
   id: '/_auth',
   getParentRoute: () => rootRoute,
+} as any)
+
+const SiteLessonsRoute = SiteLessonsImport.update({
+  id: '/lessons',
+  path: '/lessons',
+  getParentRoute: () => SiteRoute,
 } as any)
 
 const SiteIndexRoute = SiteIndexImport.update({
@@ -51,21 +64,28 @@ const AuthLoginRoute = AuthLoginImport.update({
 } as any)
 
 const SiteLessonsIndexRoute = SiteLessonsIndexImport.update({
-  id: '/lessons/',
-  path: '/lessons/',
-  getParentRoute: () => SiteRoute,
+  id: '/',
+  path: '/',
+  getParentRoute: () => SiteLessonsRoute,
 } as any)
 
-const SiteLessonsLessonIndexRoute = SiteLessonsLessonIndexImport.update({
-  id: '/lessons/$lesson/',
-  path: '/lessons/$lesson/',
-  getParentRoute: () => SiteRoute,
+const SiteLessonsGameRoute = SiteLessonsGameImport.update({
+  id: '/_game',
+  getParentRoute: () => SiteLessonsRoute,
 } as any)
 
-const SiteLessonsLessonPlayRoute = SiteLessonsLessonPlayImport.update({
-  id: '/lessons/$lesson/play',
-  path: '/lessons/$lesson/play',
-  getParentRoute: () => SiteRoute,
+const SiteLessonsGameLessonIndexRoute = SiteLessonsGameLessonIndexImport.update(
+  {
+    id: '/$lesson/',
+    path: '/$lesson/',
+    getParentRoute: () => SiteLessonsGameRoute,
+  } as any,
+)
+
+const SiteLessonsGameLessonPlayRoute = SiteLessonsGameLessonPlayImport.update({
+  id: '/$lesson/play',
+  path: '/$lesson/play',
+  getParentRoute: () => SiteLessonsGameRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -107,26 +127,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SiteIndexImport
       parentRoute: typeof SiteImport
     }
-    '/_site/lessons/': {
-      id: '/_site/lessons/'
+    '/_site/lessons': {
+      id: '/_site/lessons'
       path: '/lessons'
       fullPath: '/lessons'
+      preLoaderRoute: typeof SiteLessonsImport
+      parentRoute: typeof SiteImport
+    }
+    '/_site/lessons/_game': {
+      id: '/_site/lessons/_game'
+      path: '/lessons'
+      fullPath: '/lessons'
+      preLoaderRoute: typeof SiteLessonsGameImport
+      parentRoute: typeof SiteLessonsRoute
+    }
+    '/_site/lessons/': {
+      id: '/_site/lessons/'
+      path: '/'
+      fullPath: '/lessons/'
       preLoaderRoute: typeof SiteLessonsIndexImport
-      parentRoute: typeof SiteImport
+      parentRoute: typeof SiteLessonsImport
     }
-    '/_site/lessons/$lesson/play': {
-      id: '/_site/lessons/$lesson/play'
-      path: '/lessons/$lesson/play'
+    '/_site/lessons/_game/$lesson/play': {
+      id: '/_site/lessons/_game/$lesson/play'
+      path: '/$lesson/play'
       fullPath: '/lessons/$lesson/play'
-      preLoaderRoute: typeof SiteLessonsLessonPlayImport
-      parentRoute: typeof SiteImport
+      preLoaderRoute: typeof SiteLessonsGameLessonPlayImport
+      parentRoute: typeof SiteLessonsGameImport
     }
-    '/_site/lessons/$lesson/': {
-      id: '/_site/lessons/$lesson/'
-      path: '/lessons/$lesson'
+    '/_site/lessons/_game/$lesson/': {
+      id: '/_site/lessons/_game/$lesson/'
+      path: '/$lesson'
       fullPath: '/lessons/$lesson'
-      preLoaderRoute: typeof SiteLessonsLessonIndexImport
-      parentRoute: typeof SiteImport
+      preLoaderRoute: typeof SiteLessonsGameLessonIndexImport
+      parentRoute: typeof SiteLessonsGameImport
     }
   }
 }
@@ -145,18 +179,42 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
+interface SiteLessonsGameRouteChildren {
+  SiteLessonsGameLessonPlayRoute: typeof SiteLessonsGameLessonPlayRoute
+  SiteLessonsGameLessonIndexRoute: typeof SiteLessonsGameLessonIndexRoute
+}
+
+const SiteLessonsGameRouteChildren: SiteLessonsGameRouteChildren = {
+  SiteLessonsGameLessonPlayRoute: SiteLessonsGameLessonPlayRoute,
+  SiteLessonsGameLessonIndexRoute: SiteLessonsGameLessonIndexRoute,
+}
+
+const SiteLessonsGameRouteWithChildren = SiteLessonsGameRoute._addFileChildren(
+  SiteLessonsGameRouteChildren,
+)
+
+interface SiteLessonsRouteChildren {
+  SiteLessonsGameRoute: typeof SiteLessonsGameRouteWithChildren
+  SiteLessonsIndexRoute: typeof SiteLessonsIndexRoute
+}
+
+const SiteLessonsRouteChildren: SiteLessonsRouteChildren = {
+  SiteLessonsGameRoute: SiteLessonsGameRouteWithChildren,
+  SiteLessonsIndexRoute: SiteLessonsIndexRoute,
+}
+
+const SiteLessonsRouteWithChildren = SiteLessonsRoute._addFileChildren(
+  SiteLessonsRouteChildren,
+)
+
 interface SiteRouteChildren {
   SiteIndexRoute: typeof SiteIndexRoute
-  SiteLessonsIndexRoute: typeof SiteLessonsIndexRoute
-  SiteLessonsLessonPlayRoute: typeof SiteLessonsLessonPlayRoute
-  SiteLessonsLessonIndexRoute: typeof SiteLessonsLessonIndexRoute
+  SiteLessonsRoute: typeof SiteLessonsRouteWithChildren
 }
 
 const SiteRouteChildren: SiteRouteChildren = {
   SiteIndexRoute: SiteIndexRoute,
-  SiteLessonsIndexRoute: SiteLessonsIndexRoute,
-  SiteLessonsLessonPlayRoute: SiteLessonsLessonPlayRoute,
-  SiteLessonsLessonIndexRoute: SiteLessonsLessonIndexRoute,
+  SiteLessonsRoute: SiteLessonsRouteWithChildren,
 }
 
 const SiteRouteWithChildren = SiteRoute._addFileChildren(SiteRouteChildren)
@@ -166,9 +224,10 @@ export interface FileRoutesByFullPath {
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/': typeof SiteIndexRoute
-  '/lessons': typeof SiteLessonsIndexRoute
-  '/lessons/$lesson/play': typeof SiteLessonsLessonPlayRoute
-  '/lessons/$lesson': typeof SiteLessonsLessonIndexRoute
+  '/lessons': typeof SiteLessonsGameRouteWithChildren
+  '/lessons/': typeof SiteLessonsIndexRoute
+  '/lessons/$lesson/play': typeof SiteLessonsGameLessonPlayRoute
+  '/lessons/$lesson': typeof SiteLessonsGameLessonIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -177,8 +236,8 @@ export interface FileRoutesByTo {
   '/register': typeof AuthRegisterRoute
   '/': typeof SiteIndexRoute
   '/lessons': typeof SiteLessonsIndexRoute
-  '/lessons/$lesson/play': typeof SiteLessonsLessonPlayRoute
-  '/lessons/$lesson': typeof SiteLessonsLessonIndexRoute
+  '/lessons/$lesson/play': typeof SiteLessonsGameLessonPlayRoute
+  '/lessons/$lesson': typeof SiteLessonsGameLessonIndexRoute
 }
 
 export interface FileRoutesById {
@@ -188,9 +247,11 @@ export interface FileRoutesById {
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/register': typeof AuthRegisterRoute
   '/_site/': typeof SiteIndexRoute
+  '/_site/lessons': typeof SiteLessonsRouteWithChildren
+  '/_site/lessons/_game': typeof SiteLessonsGameRouteWithChildren
   '/_site/lessons/': typeof SiteLessonsIndexRoute
-  '/_site/lessons/$lesson/play': typeof SiteLessonsLessonPlayRoute
-  '/_site/lessons/$lesson/': typeof SiteLessonsLessonIndexRoute
+  '/_site/lessons/_game/$lesson/play': typeof SiteLessonsGameLessonPlayRoute
+  '/_site/lessons/_game/$lesson/': typeof SiteLessonsGameLessonIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -201,6 +262,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/'
     | '/lessons'
+    | '/lessons/'
     | '/lessons/$lesson/play'
     | '/lessons/$lesson'
   fileRoutesByTo: FileRoutesByTo
@@ -219,9 +281,11 @@ export interface FileRouteTypes {
     | '/_auth/login'
     | '/_auth/register'
     | '/_site/'
+    | '/_site/lessons'
+    | '/_site/lessons/_game'
     | '/_site/lessons/'
-    | '/_site/lessons/$lesson/play'
-    | '/_site/lessons/$lesson/'
+    | '/_site/lessons/_game/$lesson/play'
+    | '/_site/lessons/_game/$lesson/'
   fileRoutesById: FileRoutesById
 }
 
@@ -260,9 +324,7 @@ export const routeTree = rootRoute
       "filePath": "_site.tsx",
       "children": [
         "/_site/",
-        "/_site/lessons/",
-        "/_site/lessons/$lesson/play",
-        "/_site/lessons/$lesson/"
+        "/_site/lessons"
       ]
     },
     "/_auth/login": {
@@ -277,17 +339,33 @@ export const routeTree = rootRoute
       "filePath": "_site/index.tsx",
       "parent": "/_site"
     },
+    "/_site/lessons": {
+      "filePath": "_site/lessons",
+      "parent": "/_site",
+      "children": [
+        "/_site/lessons/_game",
+        "/_site/lessons/"
+      ]
+    },
+    "/_site/lessons/_game": {
+      "filePath": "_site/lessons/_game.tsx",
+      "parent": "/_site/lessons",
+      "children": [
+        "/_site/lessons/_game/$lesson/play",
+        "/_site/lessons/_game/$lesson/"
+      ]
+    },
     "/_site/lessons/": {
       "filePath": "_site/lessons/index.tsx",
-      "parent": "/_site"
+      "parent": "/_site/lessons"
     },
-    "/_site/lessons/$lesson/play": {
-      "filePath": "_site/lessons/$lesson/play.tsx",
-      "parent": "/_site"
+    "/_site/lessons/_game/$lesson/play": {
+      "filePath": "_site/lessons/_game/$lesson/play.tsx",
+      "parent": "/_site/lessons/_game"
     },
-    "/_site/lessons/$lesson/": {
-      "filePath": "_site/lessons/$lesson/index.tsx",
-      "parent": "/_site"
+    "/_site/lessons/_game/$lesson/": {
+      "filePath": "_site/lessons/_game/$lesson/index.tsx",
+      "parent": "/_site/lessons/_game"
     }
   }
 }

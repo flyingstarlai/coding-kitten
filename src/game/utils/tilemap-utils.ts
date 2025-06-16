@@ -53,9 +53,7 @@ export function getTileRenderInfo(
   index: number,
   rawMap: TiledMap,
   frames: Texture[],
-): { texture: Texture; x: number; y: number } | null {
-  if (gid <= 0) return null;
-
+): { texture: Texture; x: number; y: number } {
   const ts = rawMap.tilesets[0];
   const frameIndex = gid - ts.firstgid;
   const texture = frames[frameIndex];
@@ -65,6 +63,8 @@ export function getTileRenderInfo(
 
   const x = col * rawMap.tilewidth + rawMap.tilewidth / 2;
   const y = row * rawMap.tileheight + rawMap.tileheight / 2;
+
+  // texture.source.scaleMode = "nearest";
 
   return { texture, x, y };
 }

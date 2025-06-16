@@ -11,6 +11,16 @@ import mapArenaJsonUrl from "@/game/assets/map_arena.json?url";
 import mapArenaPngUrl from "@/game/assets/map_arena.png?url";
 import levelsJsonUrl from "@/game/assets/levels.json?url";
 import chestClosedPngUrl from "@/game/assets/chest_closed.png?url";
+
+// MAP LEVEL
+import autumnMapPngUrl from "@/game/assets/autumn_path.png?url";
+import mapFlagPngUrl from "@/game/assets/level_marker_flag.png?url";
+import mapSeqJson from "@/game/assets/map_seq.json?url";
+import starLevelPngUrl from "@/game/assets/three_stars_empy_gold.png?url";
+
+// AUDIO
+import hoverMp3Url from "@/game/assets/sounds/flag-hover.mp3?url";
+import selectMp3Url from "@/game/assets/sounds/flag-select.mp3?url";
 import collectCoinMp3Url from "@/game/assets/sounds/collect_coin.mp3?url";
 import onGoalMp3Url from "@/game/assets/sounds/on_goal.mp3?url";
 import failedMp3Url from "@/game/assets/sounds/failed.mp3?url";
@@ -26,10 +36,18 @@ export const spriteBundles = {
     mapAreaPng: mapArenaPngUrl,
     levelsJson: levelsJsonUrl,
   },
+  sequence: {
+    autumnMap: autumnMapPngUrl,
+    mapFlag: mapFlagPngUrl,
+    mapSeq: mapSeqJson,
+    starLevel: starLevelPngUrl,
+  },
   chest: {
     chestClosed: chestClosedPngUrl,
   },
   audio: {
+    onHover: hoverMp3Url,
+    onSelect: selectMp3Url,
     collectCoin: collectCoinMp3Url,
     onGoal: onGoalMp3Url,
     onFailed: failedMp3Url,

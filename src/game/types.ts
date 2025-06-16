@@ -162,6 +162,12 @@ export interface TiledMap {
     type: string;
     visible: boolean;
     data: number[];
+    objects: Array<{
+      name: string;
+      id: number;
+      x: number;
+      y: number;
+    }>;
   }>;
   tilesets: Array<{
     firstgid: number;

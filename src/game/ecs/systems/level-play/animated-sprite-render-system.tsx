@@ -1,14 +1,14 @@
 import React, { useRef } from "react";
 import { useTick } from "@pixi/react";
 import { AnimatedSprite } from "pixi.js";
-import { useEntityQuery } from "@/game/hooks/use-entity-query";
-import { useEcsStore } from "@/game/store/use-ecs-store";
-import { useMovementStore } from "@/game/store/use-movement-store";
-import { useAssets } from "@/game/provider/asset-context";
+import { useEntityQuery } from "@/game/hooks/use-entity-query.ts";
+import { useEcsStore } from "@/game/store/use-ecs-store.ts";
+import { useMovementStore } from "@/game/store/use-movement-store.ts";
+import { useAssets } from "@/game/provider/asset-context.ts";
 import {
   getFacingDirection,
   getFacingRotation,
-} from "@/game/utils/facing-utils";
+} from "@/game/utils/facing-utils.ts";
 
 export const AnimatedSpriteRenderSystem: React.FC = () => {
   // 1) Grab the single player entity id

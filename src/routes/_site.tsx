@@ -20,7 +20,7 @@ function RouteComponent() {
       }
       className={clsx(
         (location.pathname === "/playground" ||
-          location.pathname.includes("play")) &&
+          location.pathname.includes("lessons")) &&
           "h-screen overflow-hidden",
       )}
     >

@@ -11,6 +11,7 @@ export interface AssetContextType {
   chest: BundleTextures<"chest">;
   // audio URLs
   audio: BundleTextures<"audio">;
+  sequence: BundleTextures<"sequence">;
 }
 
 export const AssetContext = createContext<AssetContextType | null>(null);

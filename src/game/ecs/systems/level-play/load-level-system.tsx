@@ -21,8 +21,8 @@ import level14Json from "@/game/assets/levels/level14.json";
 import level15Json from "@/game/assets/levels/level15.json";
 // … up through level15.json
 
-import type { GameLevel } from "@/game/types";
-import { useEcsStore } from "@/game/store/use-ecs-store";
+import type { GameLevel } from "@/game/types.ts";
+import { useEcsStore } from "@/game/store/use-ecs-store.ts";
 import { levelMapper } from "@/game/constans.ts";
 
 const levelJsonMap: Record<string, GameLevel> = {

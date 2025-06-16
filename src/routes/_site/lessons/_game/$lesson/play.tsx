@@ -1,7 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { GameContainer } from "@/game";
-import { AssetProvider } from "@/game/provider/asset-provider.tsx";
-import { MobileAlertDialog } from "@/components/mobile-alert-dialog.tsx";
+import { GameContainer } from "@/game/page/play-level-page.tsx";
 import { useEffect } from "react";
 import { useSidebar } from "@/components/ui/sidebar.tsx";
 
@@ -9,7 +7,7 @@ type LevelLoad = {
   level: string;
 };
 
-export const Route = createFileRoute("/_site/lessons/$lesson/play")({
+export const Route = createFileRoute("/_site/lessons/_game/$lesson/play")({
   component: RouteComponent,
   validateSearch: (search: Record<string, unknown>): LevelLoad => {
     return {
@@ -39,9 +37,8 @@ function RouteComponent() {
   }, []);
 
   return (
-    <AssetProvider>
-      <MobileAlertDialog />
+    <>
       <GameContainer />
-    </AssetProvider>
+    </>
   );
 }

@@ -106,6 +106,7 @@ export const LessonList: React.FC = () => {
             <Link
               key={lesson.id}
               to="/lessons/$lesson"
+              search={{ page: 1 }}
               params={{ lesson: lesson.id }}
             >
               <Card className="hover:shadow-lg transition-shadow duration-200">

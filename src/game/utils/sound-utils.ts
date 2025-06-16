@@ -9,7 +9,7 @@ export function playSound(
   volume: number = 1,
   speed: number = 1,
 ) {
-  if (document.hasFocus()) {
+  if (document.hasFocus() && sound) {
     return sound.play(key as string, { start: 0, volume, speed });
   }
 }

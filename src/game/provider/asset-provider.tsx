@@ -16,15 +16,18 @@ export const AssetProvider: React.FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     registerSpriteBundles();
 
+    console.log("Load Assets");
+
     Promise.all([
       loadBundleAtlas("cat"), // Spritesheet
       loadBundleAtlas("coin"), // Spritesheet
       loadBundle("maps"), // JSON + Texture bundle
       loadBundle("chest"), // Texture bundle
       loadBundle("audio"), // string URLs
+      loadBundle("sequence"),
     ])
-      .then(([cat, coin, maps, chest, audio]) => {
-        setAssets({ cat, coin, maps, chest, audio });
+      .then(([cat, coin, maps, chest, audio, sequence]) => {
+        setAssets({ cat, coin, maps, chest, audio, sequence });
       })
       .catch((err) => {
         console.error("Failed to load assets", err);
