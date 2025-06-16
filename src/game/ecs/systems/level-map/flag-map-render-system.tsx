@@ -7,15 +7,20 @@ import {
   TextStyle,
   type Texture,
 } from "pixi.js";
-import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
 import { playSound } from "@/game/utils/sound-utils.ts";
 import { useTick } from "@pixi/react";
 import { levelMapper } from "@/game/constans.ts";
+import { useProgressStore } from "@/store/use-progress-store.ts";
 
 export const FlagMapRenderSystem: React.FC = () => {
-  const { sequence } = useAssets();
+  const { sequence, stars } = useAssets();
+  const progress = useProgressStore((s) => s.progress);
+  const param = useParams({ strict: false });
   const rawMap = sequence.mapSeq as unknown as TiledMap;
   const flagTex = sequence.mapFlag;
+
+  const progressLesson = progress[param.lesson!] ?? {};
 
   const { page } = useSearch({ strict: false });
 
@@ -25,7 +30,6 @@ export const FlagMapRenderSystem: React.FC = () => {
 
   const marker = [1, 2, 3].includes(page) ? `marker_${page}` : "marker_1";
 
-  // find the object‐layer named “marker”
   const markerLayer = rawMap.layers.find(
     (l) => l.type === "objectgroup" && l.name === marker,
   );
@@ -35,9 +39,17 @@ export const FlagMapRenderSystem: React.FC = () => {
   return (
     <>
       {markerLayer.objects.map((obj) => {
-        // Tiled’s y is the *bottom* of the object,
-
         const label = obj.name.split("_")[1];
+        const level = levelMapper.find((m) => m.layer === obj.name);
+        const star = progressLesson[level!.id] ?? 0;
+        let starTex = stars.star0of3;
+        if (star === 1) {
+          starTex = stars.star1of3;
+        } else if (star === 2) {
+          starTex = stars.star2of3;
+        } else if (star === 3) {
+          starTex = stars.star3of3;
+        }
         return (
           <HoverableFlag
             key={obj.id}
@@ -45,10 +57,10 @@ export const FlagMapRenderSystem: React.FC = () => {
             x={Math.round(obj.x)}
             y={Math.round(obj.y)}
             texture={flagTex}
-            starTex={sequence.starLevel}
+            starTex={starTex}
             onClick={async () => {
               playSound("onSelect", 0.5);
-              const level = levelMapper.find((m) => m.layer === obj.name);
+
               await navigate({
                 to: "/lessons/$lesson/play",
                 search: { level: level?.id ?? levelMapper[0].id },
@@ -90,7 +102,6 @@ const HoverableFlag: React.FC<HoverFlagProps> = ({
   useTick(() => {
     if (!containerRef.current) return;
 
-    // choose where we want to go
     const goal = wantHover ? targetScale.hover : targetScale.normal;
 
     const next = scaleState + (goal - scaleState) * 0.15;

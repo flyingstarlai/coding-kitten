@@ -9,6 +9,7 @@ export interface AssetContextType {
   // generic bundles: JSON objects and Textures
   maps: BundleTextures<"maps">;
   chest: BundleTextures<"chest">;
+  stars: BundleTextures<"stars">;
   // audio URLs
   audio: BundleTextures<"audio">;
   sequence: BundleTextures<"sequence">;

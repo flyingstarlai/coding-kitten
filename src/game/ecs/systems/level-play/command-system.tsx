@@ -6,9 +6,14 @@ import { useMovementStore } from "@/game/store/use-movement-store.ts";
 import { useDragDropStore } from "@/store/use-drag-drop-store.ts";
 import { computeStars } from "@/game/utils/score-utils.ts";
 import { playSound } from "@/game/utils/sound-utils.ts";
+import { useProgressStore } from "@/store/use-progress-store.ts";
+import { useParams, useSearch } from "@tanstack/react-router";
 
 export const CommandSystem: React.FC = () => {
+  const search = useSearch({ strict: false });
+  const param = useParams({ strict: false });
   const [pid] = useEntityQuery(["playerTag"]);
+  const setProgress = useProgressStore((s) => s.setStars);
   const [managerEid] = useEntityQuery(["session"]);
   const mover = useMovementStore.getState();
   const ecs = useEcsStore.getState();
@@ -59,6 +64,8 @@ export const CommandSystem: React.FC = () => {
       );
 
       ecs.addComponent(managerEid, "score", { stars });
+
+      setProgress(param.lesson!, search.level!, stars);
 
       if (onGoal) {
         playSound("onGoal");

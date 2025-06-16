@@ -16,7 +16,10 @@ import chestClosedPngUrl from "@/game/assets/chest_closed.png?url";
 import autumnMapPngUrl from "@/game/assets/autumn_path.png?url";
 import mapFlagPngUrl from "@/game/assets/level_marker_flag.png?url";
 import mapSeqJson from "@/game/assets/map_seq.json?url";
-import starLevelPngUrl from "@/game/assets/three_stars_empy_gold.png?url";
+import star0of3PngUrl from "@/game/assets/ui/star_0_3.png?url";
+import star1of3PngUrl from "@/game/assets/ui/star_1_3.png?url";
+import star2of3PngUrl from "@/game/assets/ui/star_2_3.png?url";
+import star3of3PngUrl from "@/game/assets/ui/star_3_3.png?url";
 
 // AUDIO
 import hoverMp3Url from "@/game/assets/sounds/flag-hover.mp3?url";
@@ -36,11 +39,16 @@ export const spriteBundles = {
     mapAreaPng: mapArenaPngUrl,
     levelsJson: levelsJsonUrl,
   },
+  stars: {
+    star0of3: star0of3PngUrl,
+    star1of3: star1of3PngUrl,
+    star2of3: star2of3PngUrl,
+    star3of3: star3of3PngUrl,
+  },
   sequence: {
     autumnMap: autumnMapPngUrl,
     mapFlag: mapFlagPngUrl,
     mapSeq: mapSeqJson,
-    starLevel: starLevelPngUrl,
   },
   chest: {
     chestClosed: chestClosedPngUrl,

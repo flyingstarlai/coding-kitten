@@ -16,9 +16,8 @@ export const AssetProvider: React.FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     registerSpriteBundles();
 
-    console.log("Load Assets");
-
     Promise.all([
+      loadBundle("stars"),
       loadBundleAtlas("cat"), // Spritesheet
       loadBundleAtlas("coin"), // Spritesheet
       loadBundle("maps"), // JSON + Texture bundle
@@ -26,8 +25,8 @@ export const AssetProvider: React.FC<PropsWithChildren> = ({ children }) => {
       loadBundle("audio"), // string URLs
       loadBundle("sequence"),
     ])
-      .then(([cat, coin, maps, chest, audio, sequence]) => {
-        setAssets({ cat, coin, maps, chest, audio, sequence });
+      .then(([stars, cat, coin, maps, chest, audio, sequence]) => {
+        setAssets({ stars, cat, coin, maps, chest, audio, sequence });
       })
       .catch((err) => {
         console.error("Failed to load assets", err);
