@@ -11,45 +11,67 @@ import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
 import { playSound } from "@/game/utils/sound-utils.ts";
 import { useTick } from "@pixi/react";
 import { levelMapper } from "@/game/constans.ts";
-import { useProgressStore } from "@/store/use-progress-store.ts";
+import {
+  type LessonProgress,
+  type LevelProgress,
+  useProgressStore,
+} from "@/store/use-progress-store.ts";
 
 export const FlagMapRenderSystem: React.FC = () => {
   const { sequence, stars } = useAssets();
-  const progress = useProgressStore((s) => s.progress);
-  const param = useParams({ strict: false });
+  const progressRecord = useProgressStore((s) => s.progress);
+  const { lesson } = useParams({ strict: false });
   const rawMap = sequence.mapSeq as unknown as TiledMap;
   const flagTex = sequence.mapFlag;
-
-  const progressLesson = progress[param.lesson!] ?? {};
-
   const { page } = useSearch({ strict: false });
-
   const navigate = useNavigate({ from: "/lessons/$lesson" });
 
-  if (!page) return null;
+  if (!page || !lesson) return null;
 
-  const marker = [1, 2, 3].includes(page) ? `marker_${page}` : "marker_1";
+  // get the LessonProgress, or fall back to all locked/zero-stars
+  const lessonProgress: LessonProgress = progressRecord[lesson] ?? {
+    name: lesson,
+    levels: levelMapper.map((lvl, idx) => ({
+      id: lvl.id,
+      stars: 0,
+      locked: idx !== 0,
+    })),
+  };
 
+  // pick which marker layer to render
+  const markerKey = [1, 2, 3].includes(page) ? `marker_${page}` : "marker_1";
   const markerLayer = rawMap.layers.find(
-    (l) => l.type === "objectgroup" && l.name === marker,
+    (l) => l.type === "objectgroup" && l.name === markerKey,
   );
-
   if (!markerLayer) return null;
 
   return (
     <>
       {markerLayer.objects.map((obj) => {
         const label = obj.name.split("_")[1];
-        const level = levelMapper.find((m) => m.layer === obj.name);
-        const star = progressLesson[level!.id] ?? 0;
-        let starTex = stars.star0of3;
-        if (star === 1) {
-          starTex = stars.star1of3;
-        } else if (star === 2) {
-          starTex = stars.star2of3;
-        } else if (star === 3) {
-          starTex = stars.star3of3;
+        const mapEntry = levelMapper.find((m) => m.layer === obj.name)!;
+        const levelId = mapEntry.id;
+
+        // find the persisted progress for that level
+        const lvlProg: LevelProgress = lessonProgress.levels.find(
+          (l) => l.id === levelId,
+        ) ?? {
+          id: levelId,
+          stars: 0,
+          locked: true,
+        };
+
+        const { stars: starCount, locked } = lvlProg;
+
+        // choose a star texture only if unlocked
+        let starTex: Texture | null = null;
+        if (!locked) {
+          if (starCount === 1) starTex = stars.star1of3;
+          else if (starCount === 2) starTex = stars.star2of3;
+          else if (starCount === 3) starTex = stars.star3of3;
+          else starTex = stars.star0of3;
         }
+
         return (
           <HoverableFlag
             key={obj.id}
@@ -58,12 +80,14 @@ export const FlagMapRenderSystem: React.FC = () => {
             y={Math.round(obj.y)}
             texture={flagTex}
             starTex={starTex}
+            disable={locked}
             onClick={async () => {
+              if (locked) return;
               playSound("onSelect", 0.5);
 
               await navigate({
                 to: "/lessons/$lesson/play",
-                search: { level: level?.id ?? levelMapper[0].id },
+                search: { level: levelId },
               });
             }}
           />
@@ -78,8 +102,9 @@ interface HoverFlagProps {
   y: number;
   label: string;
   texture: Texture;
-  starTex: Texture;
+  starTex: Texture | null;
   onClick: () => void;
+  disable: boolean;
 }
 
 const HoverableFlag: React.FC<HoverFlagProps> = ({
@@ -89,6 +114,7 @@ const HoverableFlag: React.FC<HoverFlagProps> = ({
   texture,
   starTex,
   onClick,
+  disable,
 }) => {
   const containerRef = useRef<Container>(null);
   const offset = {
@@ -122,8 +148,9 @@ const HoverableFlag: React.FC<HoverFlagProps> = ({
       ref={containerRef}
       eventMode="static"
       interactive={true}
-      cursor="pointer"
+      cursor={!disable ? "pointer" : "default"}
       onPointerOver={(e: FederatedEvent) => {
+        if (disable) return;
         playSound("onHover", 0.3);
         const s = e.currentTarget;
         s.tint = 0xf0fdfa;
@@ -140,13 +167,15 @@ const HoverableFlag: React.FC<HoverFlagProps> = ({
     >
       <pixiSprite texture={texture} roundPixels={true} anchor={0.5} />
       <pixiText text={label} style={textStyle} anchor={0.5} y={-4} />
-      <pixiSprite
-        texture={starTex}
-        roundPixels={true}
-        anchor={0.5}
-        scale={0.8}
-        y={-offset.y - 7}
-      />
+      {starTex && (
+        <pixiSprite
+          texture={starTex}
+          roundPixels={true}
+          anchor={0.5}
+          scale={0.8}
+          y={-offset.y - 7}
+        />
+      )}
     </pixiContainer>
   );
 };

@@ -13,7 +13,8 @@ export const CommandSystem: React.FC = () => {
   const search = useSearch({ strict: false });
   const param = useParams({ strict: false });
   const [pid] = useEntityQuery(["playerTag"]);
-  const setProgress = useProgressStore((s) => s.setStars);
+  const setProgressStars = useProgressStore((s) => s.setStars);
+  const unlockLevel = useProgressStore((s) => s.unlockLevel);
   const [managerEid] = useEntityQuery(["session"]);
   const mover = useMovementStore.getState();
   const ecs = useEcsStore.getState();
@@ -65,7 +66,13 @@ export const CommandSystem: React.FC = () => {
 
       ecs.addComponent(managerEid, "score", { stars });
 
-      setProgress(param.lesson!, search.level!, stars);
+      if (param.lesson && search.level) {
+        setProgressStars(param.lesson, search.level, stars);
+      }
+
+      if (param.lesson && level.next) {
+        unlockLevel(param.lesson, level.next);
+      }
 
       if (onGoal) {
         playSound("onGoal");

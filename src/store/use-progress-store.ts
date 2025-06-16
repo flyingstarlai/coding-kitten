@@ -1,26 +1,39 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { nanoid } from "nanoid";
+import { levelMapper } from "@/game/constans.ts";
+
+export interface LevelProgress {
+  id: string;
+  locked: boolean;
+  stars: number;
+}
+
+export interface LessonProgress {
+  name: string;
+  levels: LevelProgress[];
+}
 
 interface ProgressStore {
-  // User identifiers
-  userId: string | null;
+  userId: string;
   accountType: "user" | "guest";
 
-  // Navigation state
-  currentLesson: string;
-  currentLevel: string;
+  progress: Record<string, LessonProgress>;
+  unlockLevel: (lesson: string, levelId: string) => void;
 
-  // Hierarchical progress: lesson → levels → stars (0–3)
-  progress: Record<string, Record<string, number>>;
-
-  // Actions
-  setUserId: (id: string | null) => void;
-  setCurrentLesson: (lesson: string) => void;
-  setCurrentLevel: (level: string) => void;
-  setStars: (lesson: string, level: string, stars: number) => void;
+  setUserId: (id: string) => void;
+  setStars: (lesson: string, levelId: string, stars: number) => void;
   resetProgress: () => void;
 }
+
+// helper to create a blank LessonProgress
+const makeLessonProgress = (lesson: string): LessonProgress => ({
+  name: lesson,
+  levels: levelMapper.map((lvl, idx) => ({
+    id: lvl.id,
+    stars: 0,
+    locked: idx !== 0, // only first level unlocked
+  })),
+});
 
 export const useProgressStore = create<ProgressStore>()(
   persist(
@@ -28,9 +41,9 @@ export const useProgressStore = create<ProgressStore>()(
       // **initial state**—we’ll override `userId` on rehydrate if absent
       userId: "",
       accountType: "guest",
-      currentLesson: "",
-      currentLevel: "",
-      progress: {},
+      progress: {
+        sequence: makeLessonProgress("sequence"),
+      },
 
       // **actions**
       setUserId: (id) =>
@@ -39,28 +52,42 @@ export const useProgressStore = create<ProgressStore>()(
           accountType: id ? "user" : "guest",
         }),
 
-      setCurrentLesson: (lesson) => set({ currentLesson: lesson }),
-
-      setCurrentLevel: (level) => set({ currentLevel: level }),
-
-      setStars: (lesson, level, stars) =>
+      unlockLevel: (lesson, levelId) =>
         set((state) => {
-          const lessonProgress = state.progress[lesson] ?? {};
+          const lessonProg = state.progress[lesson];
+          if (!lessonProg) return {};
           return {
             progress: {
               ...state.progress,
               [lesson]: {
-                ...lessonProgress,
-                [level]: Math.max(0, Math.min(3, stars)),
+                ...lessonProg,
+                levels: lessonProg.levels.map((l) =>
+                  l.id === levelId ? { ...l, locked: false } : l,
+                ),
               },
             },
           };
         }),
 
+      setStars: (lesson, levelId, stars) =>
+        set((state) => {
+          const lessonProg = state.progress[lesson]!;
+          return {
+            progress: {
+              ...state.progress,
+              [lesson]: {
+                ...lessonProg,
+                levels: lessonProg.levels.map((lvl) =>
+                  lvl.id === levelId
+                    ? { ...lvl, stars: Math.max(0, Math.min(3, stars)) }
+                    : lvl,
+                ),
+              },
+            },
+          };
+        }),
       resetProgress: () =>
         set({
-          currentLesson: "",
-          currentLevel: "",
           progress: {},
         }),
     }),
@@ -68,17 +95,6 @@ export const useProgressStore = create<ProgressStore>()(
     {
       name: "progress-storage",
       storage: createJSONStorage(() => localStorage),
-      onRehydrateStorage: () => (state, error) => {
-        if (error) {
-          console.error("Rehydrate failed:", error);
-          return;
-        }
-
-        // Only generate & persist a new ID if none was loaded
-        if (state && !state.userId) {
-          state.setUserId(nanoid());
-        }
-      },
     },
   ),
 );
