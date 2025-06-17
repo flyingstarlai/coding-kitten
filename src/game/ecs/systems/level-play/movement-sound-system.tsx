@@ -1,12 +1,11 @@
-import React, { useRef } from "react";
 import { useTick } from "@pixi/react";
-import { type IMediaInstance } from "@pixi/sound";
 import { useEntityQuery } from "@/game/hooks/use-entity-query.ts";
 import { useEcsStore } from "@/game/store/use-ecs-store.ts";
 import { useMovementStore } from "@/game/store/use-movement-store.ts";
-import { playSound } from "@/game/utils/sound-utils.ts";
+import { useAssets } from "@/game/provider/asset-context.ts";
 
 export const MovementSoundSystem: React.FC = () => {
+  const { audio } = useAssets();
   // 1) Who’s the player?
   const [playerEid] = useEntityQuery(["playerTag"]);
   // 2) And the global play‐session so we know when to shut off
@@ -16,9 +15,6 @@ export const MovementSoundSystem: React.FC = () => {
   const mover = useMovementStore.getState();
 
   const isFocus = () => document.hasFocus();
-
-  // Tracks the current looping SoundInstance
-  const instanceRef = useRef<IMediaInstance | null>(null);
 
   useTick(() => {
     if (playerEid == null || managerEid == null) {
@@ -31,8 +27,9 @@ export const MovementSoundSystem: React.FC = () => {
     // a) If the session is over, stop any running sound and bail
     const progressFacet = ecs.getComponent(managerEid, "progress");
     if (progressFacet?.isOver && moving && moving.progress === 1) {
-      instanceRef.current?.stop();
-      instanceRef.current = null;
+      // instanceRef.current?.stop();
+      // instanceRef.current = null;
+      audio.onMoving.stop();
       return;
     }
 
@@ -46,15 +43,8 @@ export const MovementSoundSystem: React.FC = () => {
         gridMov.destRow !== gridMov.startRow) &&
       moveFacet.progress < 1;
 
-    if (isMoving) {
-      // if not already playing, start the loop
-      if (!instanceRef.current) {
-        instanceRef.current = playSound("onMoving", 0.8, 0.5) as IMediaInstance;
-      }
-    } else {
-      // no longer moving → stop the loop
-      instanceRef.current?.stop();
-      instanceRef.current = null;
+    if (isMoving && !audio.onMoving.isPlaying) {
+      audio.onMoving.play({ volume: 0.8, speed: 0.5, loop: true });
     }
   });
 

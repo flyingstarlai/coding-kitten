@@ -5,11 +5,12 @@ import { DIRECTION_DELTAS, GameConstants } from "@/game/constans.ts";
 import { useMovementStore } from "@/game/store/use-movement-store.ts";
 import { useDragDropStore } from "@/store/use-drag-drop-store.ts";
 import { computeStars } from "@/game/utils/score-utils.ts";
-import { playSound } from "@/game/utils/sound-utils.ts";
 import { useProgressStore } from "@/store/use-progress-store.ts";
 import { useParams, useSearch } from "@tanstack/react-router";
+import { useAssets } from "@/game/provider/asset-context.ts";
 
 export const CommandSystem: React.FC = () => {
+  const { audio } = useAssets();
   const search = useSearch({ strict: false });
   const param = useParams({ strict: false });
   const [pid] = useEntityQuery(["playerTag"]);
@@ -75,14 +76,14 @@ export const CommandSystem: React.FC = () => {
       }
 
       if (onGoal) {
-        playSound("onGoal");
+        audio.onGoal.play();
 
         ecs.addComponent(managerEid, "progress", {
           isOver: true,
           onGoal: true,
         });
       } else {
-        playSound("onFailed", 0.8);
+        audio.onFailed.play({ volume: 0.7 });
         ecs.addComponent(managerEid, "progress", {
           isOver: true,
         });

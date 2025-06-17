@@ -3,9 +3,10 @@ import { useTick } from "@pixi/react";
 import { getCenteredTilePosition } from "@/game/utils/tile-utils.ts";
 import { useEcsStore } from "@/game/store/use-ecs-store.ts";
 import { useMovementStore } from "@/game/store/use-movement-store.ts";
-import { playSound } from "@/game/utils/sound-utils.ts";
+import { useAssets } from "@/game/provider/asset-context.ts";
 
 export const MovementSystem: React.FC = () => {
+  const { audio } = useAssets();
   const entities = useEntityQuery(["playerTag"]);
   const ecs = useEcsStore.getState();
   const mover = useMovementStore.getState();
@@ -64,7 +65,7 @@ export const MovementSystem: React.FC = () => {
         const queue = ecs.getComponent(eid, "queue");
         const progressFacet = ecs.getComponent(managerEid, "progress");
         if (progressFacet?.isOver) {
-          playSound("onFailed", 0.5);
+          audio.onFailed.play({ volume: 0.5 });
 
           ecs.addComponent(managerEid, "score", {
             stars: 0,

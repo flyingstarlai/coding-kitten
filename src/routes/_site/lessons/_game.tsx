@@ -16,6 +16,7 @@ function RouteComponent() {
     if (!userId) {
       setUserId(nanoid());
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (

@@ -1,9 +1,10 @@
 import { useTick } from "@pixi/react";
 import { useEntityQuery } from "@/game/hooks/use-entity-query.ts";
 import { useEcsStore } from "@/game/store/use-ecs-store.ts";
-import { playSound } from "@/game/utils/sound-utils.ts";
+import { useAssets } from "@/game/provider/asset-context.ts";
 
 export const CollectCoinSystem: React.FC = () => {
+  const { audio } = useAssets();
   const [pid] = useEntityQuery(["playerTag", "gridPosition"]);
   const coins = useEntityQuery(["collectibleTag", "gridPosition"]);
   const ecs = useEcsStore.getState();
@@ -17,7 +18,7 @@ export const CollectCoinSystem: React.FC = () => {
       if (!cGrid) continue;
 
       if (pGrid.col === cGrid.col && pGrid.row === cGrid.row) {
-        playSound("collectCoin");
+        audio.collectCoin.play();
         ecs.removeEntity(cid);
 
         const bag = ecs.getComponent(pid, "bag") ?? { coins: 0 };

@@ -6,7 +6,7 @@ import {
 import {
   loadBundle,
   loadBundleAtlas,
-  registerSpriteBundles,
+  registerAssetBundles,
 } from "@/game/utils/asset-utils.ts";
 
 export const AssetProvider: React.FC<PropsWithChildren> = ({ children }) => {
@@ -14,7 +14,7 @@ export const AssetProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    registerSpriteBundles();
+    registerAssetBundles();
 
     Promise.all([
       loadBundle("stars"),

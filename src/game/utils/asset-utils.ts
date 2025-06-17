@@ -1,5 +1,4 @@
 import { Assets, Spritesheet, Texture } from "pixi.js";
-
 // Import URLs via Vite
 import catAtlasJsonUrl from "@/game/assets/cat_atlas.json?url";
 import catSheetPngUrl from "@/game/assets/cat_sheet.png?url";
@@ -32,6 +31,7 @@ import runningMp3Url from "@/game/assets/sounds/running_in_grass.mp3?url";
 import tickMp3Url from "@/game/assets/sounds/tick.mp3?url";
 import rejectedMp3Url from "@/game/assets/sounds/rejected.mp3?url";
 import destroyMp3Url from "@/game/assets/sounds/destroy.mp3?url";
+import { Sound } from "@pixi/sound";
 
 export const spriteBundles = {
   maps: {
@@ -89,7 +89,7 @@ export type AtlasBundleName = keyof typeof atlasBundles;
  */
 export type BundleTextures<B extends BundleName> = {
   readonly [K in keyof (typeof spriteBundles)[B]]: B extends "audio"
-    ? string
+    ? Sound
     : Texture;
 };
 
@@ -108,7 +108,7 @@ let hasRegistered = false;
  * Register all bundles with Pixi's global Assets system.
  * Uses `bundleName-entryKey` as the cache key to avoid collisions.
  */
-export function registerSpriteBundles(): void {
+export function registerAssetBundles(): void {
   if (hasRegistered) return;
   hasRegistered = true;
 
@@ -150,11 +150,6 @@ export async function loadBundleAtlas<B extends AtlasBundleName>(
 ): Promise<Spritesheet> {
   // Build our two unique aliases:
   const atlasAlias = `${name}Atlas`;
-
-  if (Assets.cache.has(atlasAlias)) {
-    console.log("return from cache", atlasAlias);
-    return Assets.cache.get(atlasAlias) as Spritesheet;
-  }
 
   // 2) Grab the URL for the JSON from your spriteBundles definition
   const urlMap = atlasBundles[name] as Record<string, string>;

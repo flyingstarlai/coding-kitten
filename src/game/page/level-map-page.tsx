@@ -6,7 +6,6 @@ import { LevelTileMapRenderSystem } from "@/game/ecs/systems/level-map/level-til
 import { AnimatedSprite, Container, Graphics, Sprite, Text } from "pixi.js";
 import { FlagMapRenderSystem } from "@/game/ecs/systems/level-map/flag-map-render-system.tsx";
 import { WorldContainer } from "@/game/components/world-container.tsx";
-import { useWindowSoundMute } from "@/game/hooks/use-window-sound-mute.ts";
 import { Button } from "@/components/ui/button.tsx";
 import { TransitionSystem } from "@/game/ecs/systems/transition-system.tsx";
 
@@ -22,7 +21,6 @@ const LevelMapPage: React.FC = () => {
     Graphics,
     Text,
   });
-  useWindowSoundMute();
 
   return (
     <div

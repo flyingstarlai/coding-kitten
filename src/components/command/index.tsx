@@ -13,12 +13,13 @@ import type {
 } from "@/components/command/types.ts";
 import { useSearch } from "@tanstack/react-router";
 import { useEcsStore } from "@/game/store/use-ecs-store.ts";
-import { playSound } from "@/game/utils/sound-utils.ts";
 import { DragHint } from "@/components/command/drag-hint.tsx";
+import { useAssets } from "@/game/provider/asset-context.ts";
 
 export const Command: React.FC = () => {
   const panelRef = useRef<HTMLDivElement>(null);
   const paletteRef = useRef<HTMLDivElement>(null);
+  const { audio } = useAssets();
 
   const { level } = useSearch({ strict: false });
 
@@ -270,7 +271,7 @@ export const Command: React.FC = () => {
             draggingItem.command !== guides[insertionIndex]) // wrong command for this slot
         ) {
           resetDragState();
-          playSound("onRejected", 0.1);
+          audio.onRejected.play({ volume: 0.1 });
           return;
         }
         // Remove from loop if it came from one
@@ -290,7 +291,7 @@ export const Command: React.FC = () => {
         // Insert at the calculated insertionIndex
         updatedItems.splice(insertionIndex, 0, draggingItem);
         setWorkspaceItems(updatedItems);
-        playSound("onDrop");
+        audio.onDrop.play({ volume: 0.8 });
 
         resetDragState();
         return;
@@ -301,7 +302,7 @@ export const Command: React.FC = () => {
         // If from workspace, just remove it
         if (isFromWorkspace) {
           updatedItems = updatedItems.filter((i) => i.id !== draggingItem.id);
-          playSound("onDestroy", 0.5);
+          audio.onDestroy.play({ volume: 0.5 });
         }
         // If from a loop, remove it from that loop's children
         else if (isFromLoop && loopInfo) {
@@ -331,6 +332,9 @@ export const Command: React.FC = () => {
       window.removeEventListener("pointerup", handleUp);
     };
   }, [
+    audio.onDrop,
+    audio.onRejected,
+    audio.onDestroy,
     draggingItem,
     workspaceItems,
     insertionIndex,

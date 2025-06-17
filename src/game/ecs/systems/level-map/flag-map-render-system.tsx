@@ -8,7 +8,6 @@ import {
   type Texture,
 } from "pixi.js";
 import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
-import { playSound } from "@/game/utils/sound-utils.ts";
 import { useTick } from "@pixi/react";
 import { levelMapper } from "@/game/constans.ts";
 import {
@@ -18,7 +17,7 @@ import {
 } from "@/store/use-progress-store.ts";
 
 export const FlagMapRenderSystem: React.FC = () => {
-  const { sequence, stars } = useAssets();
+  const { sequence, stars, audio } = useAssets();
   const progressRecord = useProgressStore((s) => s.progress);
   const { lesson } = useParams({ strict: false });
   const rawMap = sequence.mapSeq as unknown as TiledMap;
@@ -83,8 +82,9 @@ export const FlagMapRenderSystem: React.FC = () => {
             disable={locked}
             onClick={async () => {
               if (locked) return;
-              playSound("onSelect", 0.5);
-
+              audio.onSelect.play();
+              // const snd = audio.onSelect;
+              // snd.play({ volume: 0.1 });
               await navigate({
                 to: "/lessons/$lesson/play",
                 search: { level: levelId },
@@ -116,6 +116,7 @@ const HoverableFlag: React.FC<HoverFlagProps> = ({
   onClick,
   disable,
 }) => {
+  const { audio } = useAssets();
   const containerRef = useRef<Container>(null);
   const offset = {
     x: 71 / 2,
@@ -156,7 +157,7 @@ const HoverableFlag: React.FC<HoverFlagProps> = ({
       cursor={!disable ? "pointer" : "default"}
       onPointerOver={(e: FederatedEvent) => {
         if (disable) return;
-        playSound("onHover", 0.3);
+        audio.onHover.play({ volume: 0.5 });
         const s = e.currentTarget;
         s.tint = 0xf0fdfa;
         setWantHover(true);
