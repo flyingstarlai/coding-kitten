@@ -151,6 +151,11 @@ export async function loadBundleAtlas<B extends AtlasBundleName>(
   // Build our two unique aliases:
   const atlasAlias = `${name}Atlas`;
 
+  if (Assets.cache.has(atlasAlias)) {
+    console.log("return from cache", atlasAlias);
+    return Assets.cache.get(atlasAlias) as Spritesheet;
+  }
+
   // 2) Grab the URL for the JSON from your spriteBundles definition
   const urlMap = atlasBundles[name] as Record<string, string>;
 
@@ -172,11 +177,13 @@ export async function loadBundleAtlas<B extends AtlasBundleName>(
 
   const sheetTexture = await Assets.load(sheetUrl);
 
-  Assets.add({
-    alias: atlasAlias,
-    src: atlasUrl,
-    data: { texture: sheetTexture },
-  });
+  if (!Assets.resolver.hasKey(atlasKey)) {
+    Assets.add({
+      alias: atlasAlias,
+      src: atlasUrl,
+      data: { texture: sheetTexture },
+    });
+  }
 
   return (await Assets.load(atlasAlias)) as Spritesheet;
 }
