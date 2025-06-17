@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { Application, extend } from "@pixi/react";
 import { AnimatedSprite, Container, Graphics, Sprite, Text } from "pixi.js";
-import { Command } from "@/components/command";
 import { ResponsiveSystem } from "@/game/ecs/systems/level-play/responsive-system.tsx";
 import { LoadLevelSystem } from "@/game/ecs/systems/level-play/load-level-system.tsx";
 import { BoardRenderSystem } from "@/game/ecs/systems/level-play/board-render-system.tsx";
@@ -14,7 +13,6 @@ import { AnimatedSpriteRenderSystem } from "@/game/ecs/systems/level-play/animat
 import { GraphicRenderSystem } from "@/game/ecs/systems/level-play/graphic-render-system.tsx";
 import { CommandSystem } from "@/game/ecs/systems/level-play/command-system.tsx";
 import { TileEntitiesWrapper } from "@/game/components/tile-entities-wrapper.tsx";
-import { ResultDialog } from "@/game/components/result-dialog.tsx";
 import { GameManagerEntity } from "@/game/ecs/entities/game-manager-entity.tsx";
 import { TilemapRenderSystem } from "@/game/ecs/systems/level-play/tilemap-render-system.tsx";
 import { LevelsRenderSystem } from "@/game/ecs/systems/level-play/levels-render-system.tsx";
@@ -30,22 +28,9 @@ import { useWindowSoundMute } from "@/game/hooks/use-window-sound-mute.ts";
 import { ScoreRenderSystem } from "@/game/ecs/systems/level-play/score-render-system.tsx";
 import { TransitionSystem } from "@/game/ecs/systems/transition-system.tsx";
 
-export const GameContainer: React.FC = () => {
-  return (
-    <div
-      id="game-container"
-      className="flex flex-1 min-h-0 flex-col p-2 space-y-2"
-    >
-      <ResultDialog />
-      <Game />
-      <Command />
-    </div>
-  );
-};
-
 const screenColor = 0x2a8431;
 
-const Game: React.FC = () => {
+const GameContainer: React.FC = () => {
   extend({
     Container,
     Sprite,
@@ -107,11 +92,10 @@ const Game: React.FC = () => {
         <CollectCoinSystem />
         <MovementSystem />
         <MovementSoundSystem />
-        <TransitionSystem
-          onComplete={() => console.log("start game")}
-          color={screenColor}
-        />
+        <TransitionSystem onComplete={() => {}} color={screenColor} />
       </Application>
     </div>
   );
 };
+
+export default GameContainer;

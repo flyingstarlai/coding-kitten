@@ -22,7 +22,6 @@ export const DragHint: React.FC<DragHintProps> = ({
   } | null>(null);
 
   const level = useEcsStore((s) => s.level);
-
   const [cmd] = level.commands;
 
   const hintItem: IWorkspaceItem = {
@@ -35,29 +34,42 @@ export const DragHint: React.FC<DragHintProps> = ({
   };
 
   useLayoutEffect(() => {
-    const p = paletteRef.current;
-    const w = workspaceRef.current;
+    const updateCoords = () => {
+      const p = paletteRef.current;
+      const w = workspaceRef.current;
+      if (!p || !w) {
+        setCoords(null);
+        return;
+      }
+      const sourceEl = p.querySelector("[data-palette-item]");
+      const targetEl = w.querySelector("[data-workspace-item]");
+      if (sourceEl && targetEl) {
+        const src = sourceEl.getBoundingClientRect();
+        const tgt = targetEl.getBoundingClientRect();
+        setCoords({
+          from: { x: src.left + src.width / 2, y: src.top + src.height / 2 },
+          to: { x: tgt.left + tgt.width / 2, y: tgt.top + tgt.height / 2 },
+        });
+      } else {
+        setCoords(null);
+      }
+    };
 
-    if (!p || !w) return;
-
-    const sourceEl = p.querySelector("[data-palette-item]");
-    const targetEl = w.querySelector("[data-workspace-item]");
-
-    if (sourceEl && targetEl) {
-      const src = sourceEl.getBoundingClientRect();
-      const tgt = targetEl.getBoundingClientRect();
-      setCoords({
-        from: { x: src.left + src.width / 2, y: src.top + src.height / 2 },
-        to: { x: tgt.left + tgt.width / 2, y: tgt.top + tgt.height / 2 },
-      });
-    }
+    // initial calculation
+    updateCoords();
+    // recalc on window resize
+    window.addEventListener("resize", updateCoords);
+    return () => {
+      window.removeEventListener("resize", updateCoords);
+    };
   }, [paletteRef, workspaceRef, level]);
 
-  if (!coords) return null;
+  if (!coords || level.guides.length === 0) {
+    return null;
+  }
+
   const dx = coords.to.x - coords.from.x;
   const dy = coords.to.y - coords.from.y;
-
-  if (level.guides.length === 0) return;
 
   return (
     <motion.div

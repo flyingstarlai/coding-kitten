@@ -128,6 +128,11 @@ const HoverableFlag: React.FC<HoverFlagProps> = ({
   useTick(() => {
     if (!containerRef.current) return;
 
+    if (disable) {
+      containerRef.current.tint = 0xd1d5db;
+      containerRef.current.alpha = 0.9;
+    }
+
     const goal = wantHover ? targetScale.hover : targetScale.normal;
 
     const next = scaleState + (goal - scaleState) * 0.15;

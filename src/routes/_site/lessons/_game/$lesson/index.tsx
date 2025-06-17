@@ -17,8 +17,11 @@ export const Route = createFileRoute("/_site/lessons/_game/$lesson/")({
 
 function RouteComponent() {
   return (
-    <>
+    <div
+      id="level-container"
+      className="flex flex-1 min-h-0 flex-col p-2 space-y-2"
+    >
       <MapContainer />
-    </>
+    </div>
   );
 }

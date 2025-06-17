@@ -43,8 +43,6 @@ export const ResponsiveSystem: React.FC<ResponsiveSystemProps> = ({
       const rawScale = Math.max(ww / vw, wh / vh);
       const scale = Math.min(Math.max(rawScale, 1), 1.5);
 
-      console.log(scale);
-
       //  apply scale & center
       pixi.app.stage.scale.set(scale, scale);
       pixi.app.stage.position.set((ww - vw * scale) / 2, (wh - vh * scale) / 2);

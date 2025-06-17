@@ -28,7 +28,7 @@ const LevelMapPage: React.FC = () => {
     <div
       id="canvas-wrapper"
       ref={wrapperRef}
-      className="relative flex-1 min-h-0 overflow-hidden lg:rounded-lg lg:shadow-xs"
+      className="relative   flex-1 min-h-0 overflow-hidden lg:rounded-lg lg:shadow-xs"
     >
       <div className="absolute top-2 left-1/2 z-10 flex -translate-x-1/2 space-x-2">
         {[1, 2, 3].map((n) => (
@@ -53,10 +53,7 @@ const LevelMapPage: React.FC = () => {
           <LevelTileMapRenderSystem />
           <FlagMapRenderSystem />
         </WorldContainer>
-        <TransitionSystem
-          onComplete={() => console.log("start game")}
-          color={screenColor}
-        />
+        <TransitionSystem onComplete={() => {}} color={screenColor} />
       </Application>
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useTick, useApplication } from "@pixi/react";
+import { useTick } from "@pixi/react";
 
 interface ScreenTransitionProps {
   onComplete: () => void;
@@ -10,7 +10,6 @@ export const TransitionSystem: React.FC<ScreenTransitionProps> = ({
   onComplete,
   color,
 }) => {
-  const pixi = useApplication();
   const [alpha, setAlpha] = useState(1);
 
   useTick((ticker) => {
@@ -29,7 +28,7 @@ export const TransitionSystem: React.FC<ScreenTransitionProps> = ({
       draw={(g) => {
         g.clear();
         g.setFillStyle({ color, alpha });
-        g.rect(0, 0, pixi.app.renderer.width, pixi.app.renderer.height);
+        g.rect(0, 0, 2000, 2000);
         g.fill();
       }}
     />
