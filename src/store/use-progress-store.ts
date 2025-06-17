@@ -93,7 +93,7 @@ export const useProgressStore = create<ProgressStore>()(
     }),
 
     {
-      name: "progress-storage",
+      name: "prog-93jsj28",
       storage: createJSONStorage(() => localStorage),
     },
   ),

@@ -8,7 +8,9 @@ import { FlagMapRenderSystem } from "@/game/ecs/systems/level-map/flag-map-rende
 import { WorldContainer } from "@/game/components/world-container.tsx";
 import { useWindowSoundMute } from "@/game/hooks/use-window-sound-mute.ts";
 import { Button } from "@/components/ui/button.tsx";
+import { TransitionSystem } from "@/game/ecs/systems/transition-system.tsx";
 
+const screenColor = 0xc9d308;
 const LevelMapPage: React.FC = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const { lesson } = useParams({ strict: false });
@@ -43,7 +45,7 @@ const LevelMapPage: React.FC = () => {
       <Application
         key={`map-${lesson}`}
         resolution={Math.max(window.devicePixelRatio, 2)}
-        backgroundColor={0xc9d308}
+        backgroundColor={screenColor}
         className="w-full h-full lg:rounded-lg overflow-hidden"
       >
         <ResponsiveSystem resizeRef={wrapperRef} />
@@ -51,6 +53,10 @@ const LevelMapPage: React.FC = () => {
           <LevelTileMapRenderSystem />
           <FlagMapRenderSystem />
         </WorldContainer>
+        <TransitionSystem
+          onComplete={() => console.log("start game")}
+          color={screenColor}
+        />
       </Application>
     </div>
   );

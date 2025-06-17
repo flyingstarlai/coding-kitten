@@ -28,6 +28,7 @@ import { useEcsStore } from "@/game/store/use-ecs-store.ts";
 import { MovementSoundSystem } from "@/game/ecs/systems/level-play/movement-sound-system.tsx";
 import { useWindowSoundMute } from "@/game/hooks/use-window-sound-mute.ts";
 import { ScoreRenderSystem } from "@/game/ecs/systems/level-play/score-render-system.tsx";
+import { TransitionSystem } from "@/game/ecs/systems/transition-system.tsx";
 
 export const GameContainer: React.FC = () => {
   return (
@@ -41,6 +42,8 @@ export const GameContainer: React.FC = () => {
     </div>
   );
 };
+
+const screenColor = 0x2a8431;
 
 const Game: React.FC = () => {
   extend({
@@ -73,7 +76,7 @@ const Game: React.FC = () => {
       <Application
         key={`game-${level}`}
         resolution={Math.max(window.devicePixelRatio, 2)}
-        backgroundColor={0x2a8431}
+        backgroundColor={screenColor}
         className="w-full h-full lg:rounded-lg overflow-hidden"
       >
         <GameManagerEntity />
@@ -104,6 +107,10 @@ const Game: React.FC = () => {
         <CollectCoinSystem />
         <MovementSystem />
         <MovementSoundSystem />
+        <TransitionSystem
+          onComplete={() => console.log("start game")}
+          color={screenColor}
+        />
       </Application>
     </div>
   );
